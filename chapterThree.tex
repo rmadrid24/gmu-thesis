@@ -1,0 +1,94 @@
+\chapter[A shim Layer for persistent memory]{A shim layer for persistent memory}
+
+As we have discussed, the release of Intel Optane PMM opens a major opportunity for serverless storage services. This memory technology provides a unique combination of affordable larger capacity, high-performance, and support for data persistence [intel article]. When configured in App-Direct mode, the Optane DIMM and DRAM DIMMs act as independent memory resources under direct load/store control of the applications. This allows the Optane PMM capacity to be used as byte-addressable persistent memory that is mapped into the system application space and directly accessible by applications. Together, these advantages enable Optane PMM to be used as persistent storage with memory-like speeds.
+
+Unfortunately, the resource contention observed within Optane PMM can impose serious performance and contractual implications for a multi-tenant serverless storage service. Given the hallmark autoscaling features of serverless computing, the memory’s limited ability to handle accesses from multiple threads can degrade the overall system’s performance when workload spikes occur. Furthermore, these storage systems make efficient use of their infrastructure by allowing multiple users, or tenants, to share the physical resources. The performance degradation caused by Optane PMM can lead tenants to experience significant performance variations. The latter inhibits service providers from offering certain service level agreements.
+
+To reduce the contention effect, previous studies recommend limiting the number of threads that access Optane PMM simultaneously. In [fast], Yang et. al they improve the performance of an NVM-aware file system by limiting the number of writer threads that access each Optane DIMM. Similarly, Ribbon [] implements a concurrency control mechanism to reduce the overhead introduced by Cache Line Flushing. While this approach provides a viable solution, it introduces management problems for a system administrator of a multi-tenant serverless storage.
+
+Given the wide heterogeneity of applications running in serverless platforms, implementing efficient concurrency control mechanisms for optimizing an Optane-based serverless storage service is a challenging task. These challenges are discussed in section 3.1, but in short, service providers have three crucial tasks when implementing these control mechanisms. First, they must provide predictable performance, ensuring that all the SLAs from different workloads are met. Second, they must scale resources transparently to meet the current workload demand. Finally, they must come up with policies that allow their system to adapt quickly to sudden workload shifts. To this end, we propose a solution that takes on these responsibilities from the service providers.
+
+In this work, we present a shim layer that addresses the shortcomings of Intel Optane PMM highlighted above, while meeting the different service level agreements from multiple tenants under shifting workloads. Our shim layer, called NVM Middleware, distinguishes between latency-critical and throughput-oriented workloads and applies different concurrency control mechanisms for each one. This enables the system to reduce the contention on the memory device, as well as the interference among workloads with different service level agreements. In addition, we propose the development of a reinforcement learning agent to adapt the NVM Middleware quickly to changing workloads. The agent takes into account the characteristics and service level agreements and learns from past experiences to scale resources accordingly.
+
+
+\section{Motivation}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.6]{images/nvm-motivation-sla.png}
+  \caption[Performance Study]{Performance Study}
+\end{figure}
+
+\section{Architecture}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.8]{images/nvm_design.png}
+  \caption[NVM Middleware Architecture]{NVM Middleware Architecture}
+\end{figure}
+
+\section{Programming Interface}
+
+\begin{table}[ht]
+  \centering
+  \caption{Programming Interface}
+  % Tabular environment goes AFTER the caption!
+  \begin{tabular}{|l|l|}
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    \hline
+    \makecell{\textbf{API Name}} & \makecell{\textbf{Functionality}} \\
+    \hline
+    \rowcolor{gray!50} % Color the header row
+    start(db, interactiveThreads, batchThreads) & \makecell[cl] {Creates PMEMKV database. \\ Start control threads.} \\
+    close() & \makecell[cl] {Close PMEMKV database. \\ Stop all threads.} \\\hline
+    \rowcolor{gray!50}
+    get(key, mode) & Retrieves key from persistent memory. \\
+    put(key, value, mode) & Writes key to persistent memory. \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\section{Dynamic concurrency control with Reinforcement Learning}
+
+Start section here
+
+\begin{table}[ht]
+  \centering
+  \caption{The State Representation}
+  % Tabular environment goes AFTER the caption!
+  \begin{tabular}{|l|l|}
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    \hline
+    \thead{Name} & \thead{Description} \\\hline
+    interactiveThreads & Number of interactive threads. \\\hline
+    batchThreads & Number of batch threads. \\\hline
+    interactiveQueueSize & Interactive Queue Size. \\\hline
+    batchQueueSize & Batch queue size. \\\hline
+    interactiveBlockSize & Average block size of interactive workload. \\\hline
+    batchaBlockSize & Average bloc size of batch workload. \\\hline
+    interactiveRWRatio & Read/Write ratio of interactive workload. \\\hline
+    batchRWRatio & Read/Write ratio of batch workload. \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[ht]
+  \centering
+  \caption{The set of possible actions}
+  % Tabular environment goes AFTER the caption!
+  \begin{tabular}{|c|l|l|}
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    \hline
+    \thead{Action} & $interactiveThreads_{t+1}$ & $batchThreads_{t+1}$ \\\hline
+    0 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ & $batchThreads_{t+1}$ = $batchThreads_{t}$ \\\hline
+    1 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ + 1 & $batchThreads_{t+1}$ = $batchThreads_{t}$ \\\hline
+    2 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ - 1 & $batchThreads_{t+1}$ = $batchThreads_{t}$ \\\hline
+    3 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ & $batchThreads_{t+1}$ = $batchThreads_{t}$ + 1 \\\hline
+    4 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ & $batchThreads_{t+1}$ = $batchThreads_{t}$ -1 \\\hline
+    5 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ + 1 & $batchThreads_{t+1}$ = $batchThreads_{t}$ + 1 \\\hline
+    6 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ + 1 & $batchThreads_{t+1}$ = $batchThreads_{t}$ - 1 \\\hline
+    7 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ - 1  & $batchThreads_{t+1}$ = $batchThreads_{t}$ + 1 \\\hline
+    8 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ - 1  & $batchThreads_{t+1}$ = $batchThreads_{t}$ - 1 \\
+    \hline
+  \end{tabular}
+\end{table}
