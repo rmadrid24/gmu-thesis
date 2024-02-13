@@ -16,7 +16,7 @@ In this section, we discuss the pain points of controlling the number of threads
 
 \subsection{Concurrency Control Challenges in a serverless storage service}
 
-When building an Optane PMM based serverless storage service, optimizing the memory’s performance is just the start. Early works in serverless computing have identified several tasks that a storage service must perform efficiently to meet the demands of serverless computing \cite{180275,jonas2019cloud,klimovic2018understanding,klimovic2018pocket,wu2019autoscaling,romero2021faat}. As a result, service providers must ensure that their concurrency control policies do not interfere with these design goals. In this work, we focus on three challenges faced by service providers when designing a high-performance storage service based on Optane PMM.
+When building an Optane PMM based serverless storage service, optimizing the memory's performance is just the start. Early works in serverless computing have identified several tasks that a storage service must perform efficiently to meet the demands of serverless computing \cite{180275,jonas2019cloud,klimovic2018understanding,klimovic2018pocket,wu2019autoscaling,romero2021faat}. As a result, service providers must ensure that their concurrency control policies do not interfere with these design goals. In this work, we focus on three challenges faced by service providers when designing a high-performance storage service based on Optane PMM.
 
 \textbf{Support for a wide heterogeneity of applications.} In serverless computing, users typically deploy their applications as a collection of serverless functions that share data among them using remote storage. Previous studies suggest that these applications vary considerably in the way store, distribute, and process data. This diversity is reflected in multiple ways, such as data access size \cite{klimovic2018pocket,romero2021faat}, data access patterns \cite{romero2021faat}, and their performance requirements [180275,jonas2019cloud]. Therefore, service providers face the challenge of tuning the concurrency level to support many types of applications. In this work, we argue that considering the workload characteristics is key for tuning the system efficiently. The allocation of resources can vary depending on the workload type.
 
@@ -25,90 +25,274 @@ When building an Optane PMM based serverless storage service, optimizing the mem
 \textbf{Automatic and transparent scaling.} Serverless workloads are extremely unpredictable. These workloads can launch hundreds of functions instantaneously to meet application demands \cite{klimovic2018understanding}. Furthermore, the data access patterns of the applications can change dramatically over time \cite{romero2021faat,wu2019autoscaling}. Service providers face the challenge of scaling the resources, such as number of threads, automatically to meet the demands of changing workloads. In addition, they must ensure that the system adapts quickly enough to avoid missing SLAs.
 
 
-\subsection{NVM Middleware Design}
+\subsection{NVM Middleware Design Overview}
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[scale=0.6]{images/nvm-motivation-sla.png}
-  \caption[Performance Study]{Performance Study}
-\end{figure}
+We design NVM Middleware with three main design goals.
+
+\textbf{Workload-aware Contention Management.} We focus our work on two main types of workloads: interactive and batch applications. Interactive applications, such as web-based platforms, enable real-time interactions between the user and the application. Low latency is critical to ensure that the user input is processed quickly, and feedback is delivered in real-time. On the other hand, batch applications, such as data analytics jobs, facilitate efficient processing of large-scale data. These workloads prioritize high throughput to process large volumes of data efficiently.
+
+The NVM Middleware leverage insights about the workload characteristics, resource demands, and performance requirements of applications to make informed decisions about resource allocation and contention resolution. By dynamically adjusting resource allocation and contention resolution mechanisms based on the workload characteristics, the NVM Middleware mitigates contention-induced performance degradation and ensures efficient resource sharing among co-located applications. This adaptive approach enables the NVM Middleware to allocate resources judiciously to maximize overall system efficiency and meet diverse performance requirements of both interactive and batch applications. By using the content-aware contention management offered by the NVM Middleware, a storage system using Optane PMM can effectively balance the needs of different workload types, ensuring optimal performance and resources utilizing in multi-tenant environments.
+
+\textbf{SLA-driven autoscaling policies.} The NVM Middleware leverages SLAs, which define the quality-of-service parameters agreed up between the service provider and their customers, to dynamically adjust contention resolution mechanisms in response to changes in service level agreement metrics. It continuously monitors SLA metrics, such as 99th latency and throughput, and evaluates its own performance against predefined SLA targets. This real-time monitoring allows the NVM Middleware to detect deviations from SLA requirements and triggers scaling actions to dynamically adjust resource allocation. By aligning resource provisioning with SLA requirements, the NVM Middleware can ensure a consistent and reliable performance from Optane PMM, even under dynamic workload changes.
+
+\textbf{RL-driven autoscaling policies.} Besides leveraging SLAs to dynamically provision resources and adjust contention resolution mechanisms, our solution proposes the use of Reinforcement Learning to learn from past experiences and predict future behaviors.  These RL-driven policies enable the NVM Middleware to adapt to changing workload patterns over time and meet SLAs objectives more effectively than traditional threshold-based approaches []. Moreover, given the dynamic and unpredictable of serverless workloads, we propose a model-free algorithm, Q-Learning, to continuously learn the optimal policy based on observed experiences, allowing the NVM Middleware to adapt to new scenarios without needing to explicitly model them.
 
 \section{Architecture}
 
 \begin{figure}[ht]
   \centering
+  \label{images:nvm_architecture}
   \includegraphics[scale=0.8]{images/nvm_design.png}
   \caption[NVM Middleware Architecture]{NVM Middleware Architecture}
 \end{figure}
 
+Figure \ref{images:nvm_architecture} provides an overview of the NVM Middleware architecture. Positioned as a middle layer connecting user applications with Optane PMM, its design is tailored for seamless integration within a storage service, serving as an optimization layer specifically targeting Optane PMM. It comprises a request handler, two concurrency thread pools, and a monitoring and resource management module.
+
+The request handler serves as the primary interface for handling user I/O requests. Upon receipt, it segregates requests into two distinct non-blocking First-In-First-Out (FIFO) queues: one tailed for latency-sensitive requests and the other for throughput-centric ones. Leveraging insights into workload characteristics, the handler intelligently allocates requests to the appropriate queue. Moreover, each queue is assigned a dedicated pool of worker threads tasked with dispatching I/O requests to Optane PMM using PMEMKV. Notably, these thread pools operate independently and are dynamically managed and scaled by the Reinforcement Learning agent to meet predetermined latency and throughput goals.
+
+The Monitoring and Resource Management module offers an interface to monitor system load and SLA performance metrics. This module initiates a separate control thread tasked with gathering data on key parameters within the NVM Middleware, such as 99th latency, throughput, and system load. Utilizing this information, the RL agent makes data-driven decisions regarding optimal thread pool scaling. Subsequently, these decisions are communicated to the Monitoring and Resource Management module, which executes the required actions within the NVM Middleware.
+
 \section{Programming Interface}
-Describe API here
+
+% \begin{table}[ht]
+%   \centering
+%   \caption{Programming Interface}
+%   \label{table:programming_interface}
+%   % Tabular environment goes AFTER the caption!
+%   \begin{adjustbox}{width=1\textwidth}
+%   \begin{tabular}{|l|l|l}
+%     % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%     \hline
+%     \thead{API Name} & \thead{Functionality} \\
+%     \hline
+%     \rowcolor{gray!50} % Color the header row
+%     start(db, interactiveThreads, batchThreads) & \makecell[cl] {Create PMEMKV database. \\ Start control threads. \\ Start system monitoring in Monitoring and Resource Management Module.} \\
+%     close() & \makecell[cl] {Close PMEMKV database. \\ Stop all threads. \\ Start system monitoring in Monitoring and Resource Management Module.} \\\hline
+%     \rowcolor{gray!50}
+%     get(key, mode) & Retrieves key from persistent memory. \\
+%     put(key, value, mode) & Writes key to persistent memory. \\
+%     \hline
+%     \rowcolor{gray!50}
+%     get\_stats() & Provides the 99th percentile and throughput observed by the NVM Middleware. \\
+%     get\_state() & Provides the current state within the NVM Middleware. \\
+%     \rowcolor{gray!50}
+%     perform\_action(action) & Triggers a scaling action. \\
+%     \hline
+%   \end{tabular}
+% \end{adjustbox}
+% \end{table}
+
+% Table \ref{table:programming_interface} provides an overview of the NVM Middleware application interface, which features a key-value API supplemented with functions tailored to facilitate the decision-making process associated with thread pool scaling.
+
+% The start function initializes the database utilized by PMEMKV, initializes the thread pools with an initial thread count, and triggers the system monitoring within the Monitoring and Resource Management Module. Conversely, the stop function terminates the connection with the PMEMKV database, releases resources utilized by the thread pools, and prompts the Monitoring and Resource Management to cease system monitoring. The API enables Ke-Value Store interactions via get and put functions, with the capacity to accept hints concerning the request type (e.g., latency-sensitive or throughput-oriented) to assist the request handler in queue allocation.
+
+% Moreover, the get\_stats function furnishes insights into the 99th percentile and throughput observed by the NVM Middleware at any given moment. Similarly, the get\_state function provides real-time state information as outlined in \ref{table:state_space}. Finally, the perform\_action function accepts scaling actions detailed in \ref{table:action_space} and initiates the corresponding action within the NVM Middleware.
 
 \begin{table}[ht]
   \centering
   \caption{Programming Interface}
+  \label{table:programming_interface}
   % Tabular environment goes AFTER the caption!
-  \begin{tabular}{|l|l|}
+  \begin{adjustbox}{width=1\textwidth}
+  \begin{tabular}{|l|l|l|}
     % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
     \hline
-    \makecell{\textbf{API Name}} & \makecell{\textbf{Functionality}} \\
+    \thead{Category} & \thead{API Name} & \thead{Functionality} \\
     \hline
     \rowcolor{gray!50} % Color the header row
-    start(db, interactiveThreads, batchThreads) & \makecell[cl] {Creates PMEMKV database. \\ Start control threads.} \\
-    close() & \makecell[cl] {Close PMEMKV database. \\ Stop all threads.} \\\hline
+    System & start(db, interactiveThreads, batchThreads) & \makecell[cl]{Create PMEMKV database. \\ Start interactive and batch thread pools. \\ Initiate system monitoring in Monitoring and Resource Management Module.} \\
+    System & stop() & \makecell[cl]{Closes PMEMKV database. \\ Stop thread pools. \\ Stop system monitoring.} \\
+    \hline
     \rowcolor{gray!50}
-    get(key, mode) & Retrieves key from persistent memory. \\
-    put(key, value, mode) & Writes key to persistent memory. \\
+    System & get(key, mode) & Retrieves key from persistent memory. \\
+    System & put(key, value, mode) & Writes key to persistent memory. \\
+    \rowcolor{gray!50}
+    RL & get\_stats() & Provides the 99th percentile and throughput observed by the NVM Middleware. \\
+    RL & get\_state() & Provides the current state within the NVM Middleware. \\
+    \rowcolor{gray!50}
+    RL & perform\_action(action) & Triggers a scaling action. \\
     \hline
   \end{tabular}
+\end{adjustbox}
 \end{table}
 
-\section{Dynamic concurrency control with Reinforcement Learning}
-Start section here
+
+Table \ref{table:programming_interface} outlines the NVM Middleware's programming interface, presenting a set of functions designed to facilitate interaction with a storage system and the reinforcement learning agent. 
+
+The $start$ function initializes the PMEMKV database, initializes the thread pools with an initial thread count, and triggers the system monitoring within the Monitoring and Resource Management Module. In contrast, the $stop$ function terminates the database connection, halts all threads in the thread pools, and stops system monitoring. Furthermore, the $get$ and $put$ functions facilitate key-value interactions with the persistent memory, allowing for read and write operations. These functions are designed to accommodate hints regarding the request type (e.g., latency-sensitive or throughput-oriented), aiding the request handler in queue allocation.
+
+The $get\_stats$ function furnishes insights into the 99th percentile and throughput observed by the NVM Middleware at any given moment. Similarly, the $get\_state$ function provides real-time state information as outlined in Table \ref{table:state_space}. Finally, the $perform\_action$ function accepts scaling actions detailed in Table \ref{table:action_space} and initiates the corresponding action within the NVM Middleware.
+
+\section{Reinforcement Learning Component}
+
+In this section, we discuss the Q-learning algorithm used by the Reinforcement Learning agent to dynamically adjust the number of threads assigned to each thread pool. The agent’s goal is to find the best combination of threads that meets predetermined latency and throughput SLAs while minimizing contention and ensuring efficient utilization of Intel Optane PMM. 
+
+% \subsection{State Space}
+% Table \ref{table:state_space} provides an overview of the features used in our state representation. We define state s at time step t by the the following tuple st= (interactiveThreads, batchThreads, InteractiveQueueSize, batchQueueSize, interactiveBlockSize, batchBlockSize, interactiveRWRatio, batchRWRatio), where st E S.
+
+\subsection{State Space}
+
+% \begin{table}[ht]
+%   \centering
+%   \caption{The State Representation}
+%   \label{table:state_space}
+%   \begin{adjustbox}{width=1\textwidth}
+%   \begin{tabular}{|l|l|l|}
+%     \hline
+%     \thead{Name} & \thead{Description} & \thead{Values} \\
+%     \hline
+%     \rowcolor{gray!50}
+%     interactiveThreads & Number of (interactive) threads assigned to the interactive thread pool. & $1 \leq \text{interactiveThreads} \leq 32$ \\
+%     \hline
+%     batchThreads & Number of (batch) threads assigned to the batch thread pool. & $1 \leq \text{batchThreads} \leq 32$ \\
+%     \hline
+%     \rowcolor{gray!50}
+%     interactiveQueueSize & Number of requests in the interactive queue. & $\text{interactiveQueueSize} \in \mathbb{R}^+$ \\
+%     \hline
+%     batchQueueSize & Number of requests in the batch queue. & $\text{batchQueueSize} \in \mathbb{R}^+$ \\
+%     \hline
+%     \rowcolor{gray!50}
+%     interactiveBlockSize & Average block size of interactive workload. & $\text{interactiveBlockSize} \in \mathbb{R}^+$ \\
+%     \hline
+%     batchBlockSize & Average block size of batch workload. & $\text{batchBlockSize} \in \mathbb{R}^+$ \\
+%     \hline
+%     \rowcolor{gray!50}
+%     interactiveWriteRatio & Proportion of write requests compared to read requests in the interactive workload. & $\text{interactiveRWRatio} \in \mathbb{R}^+$ \\
+%     \hline
+%     batchWriteRatio & Proportion of write requests compared to read requests in the batch workload & $\text{batchRWRatio} \in \mathbb{R}^+$ \\
+%     \hline
+%   \end{tabular}
+%   \end{adjustbox}
+% \end{table}
+\begin{table}[ht]
+  \centering
+  \caption{The State Representation}
+  \label{table:state_space}
+  \begin{adjustbox}{width=1\textwidth}
+  \begin{tabular}{|l|l|l|}
+    \hline
+    \thead{Name} & \thead{Description} & \thead{Values} \\
+    \hline
+    \rowcolor{gray!50}
+    interactiveThreads & \makecell[l]{Number of (interactive) threads assigned\\ to the interactive thread pool.} & $1 \leq \text{interactiveThreads} \leq 32$ \\
+    \hline
+    batchThreads & \makecell[l]{Number of (batch) threads assigned\\ to the batch thread pool.} & $1 \leq \text{batchThreads} \leq 32$ \\
+    \hline
+    \rowcolor{gray!50}
+    interactiveQueueSize & \makecell[l]{Number of requests in the interactive queue.} & $\text{interactiveQueueSize} \in \mathbb{R}^+$ \\
+    \hline
+    batchQueueSize & \makecell[l]{Number of requests in the batch queue.} & $\text{batchQueueSize} \in \mathbb{R}^+$ \\
+    \hline
+    \rowcolor{gray!50}
+    interactiveBlockSize & \makecell[l]{Average block size of interactive workload.} & $\text{interactiveBlockSize} \in \mathbb{R}^+$ \\
+    \hline
+    batchBlockSize & \makecell[l]{Average block size of batch workload.} & $\text{batchBlockSize} \in \mathbb{R}^+$ \\
+    \hline
+    \rowcolor{gray!50}
+    interactiveWriteRatio & \makecell[l]{Proportion of write requests compared\\ to read requests in the interactive workload.} & $\text{interactiveRWRatio} \in \mathbb{R}^+$ \\
+    \hline
+    batchWriteRatio & \makecell[l]{Proportion of write requests compared\\ to read requests in the batch workload.} & $\text{batchRWRatio} \in \mathbb{R}^+$ \\
+    \hline
+  \end{tabular}
+  \end{adjustbox}
+\end{table}
+
+Table \ref{table:state_space} presents the features of our state representation. At each time step $t$, we define the state $s_t$ as a tuple:
+
+\[
+\begin{aligned}
+s_t = (& \text{interactiveThreads}_t, \text{batchThreads}_t, \text{InteractiveQueueSize}_t, \text{batchQueueSize}_t, \\
+& \text{interactiveBlockSize}_t, \text{batchBlockSize}_t, \text{interactiveRWRatio}_t, \text{batchRWRatio}_t )
+\end{aligned}
+\]
+
+where $s_t \in S$ represents the state space. The tuple encapsulates the key features characterizing the system's current state, including the number of interactive and batch threads, number of pending requests in the queues, individual workload block sizes, and write ratio for both interactive and batch workloads.
+
+\subsection{Action Space}
 
 \begin{table}[ht]
   \centering
-  \caption{The State Representation}% Color the header row
-  % Tabular environment goes AFTER the caption!
-  \begin{tabular}{|l|l|}
-    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
-    \hline
-    \makecell{\textbf{Name}} & \makecell{\textbf{Description}} \\\hline
-    \rowcolor{gray!50} % Color the header row
-    interactiveThreads & Number of interactive threads. \\\hline
-    batchThreads & Number of batch threads. \\\hline
-    \rowcolor{gray!50} % Color the header row
-    interactiveQueueSize & Interactive Queue Size. \\\hline
-    batchQueueSize & Batch queue size. \\\hline
-    \rowcolor{gray!50} % Color the header row
-    interactiveBlockSize & Average block size of interactive workload. \\\hline
-    batchaBlockSize & Average bloc size of batch workload. \\\hline
-    \rowcolor{gray!50} % Color the header row
-    interactiveRWRatio & Read/Write ratio of interactive workload. \\\hline
-    batchRWRatio & Read/Write ratio of batch workload. \\
-    \hline
-  \end{tabular}
-\end{table}
-
-\begin{table}[ht]
-  \centering
-  \caption{The set of possible actions}
-  % Tabular environment goes AFTER the caption!
+  \caption{Possible Actions in the Action Space}
+  \label{table:action_space}
   \begin{tabular}{|c|l|l|}
-    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
-    \hline
-    \thead{Action} & $interactiveThreads_{t+1}$ & $batchThreads_{t+1}$ \\\hline
-    0 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ & $batchThreads_{t+1}$ = $batchThreads_{t}$ \\\hline
-    1 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ + 1 & $batchThreads_{t+1}$ = $batchThreads_{t}$ \\\hline
-    2 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ - 1 & $batchThreads_{t+1}$ = $batchThreads_{t}$ \\\hline
-    3 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ & $batchThreads_{t+1}$ = $batchThreads_{t}$ + 1 \\\hline
-    4 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ & $batchThreads_{t+1}$ = $batchThreads_{t}$ -1 \\\hline
-    5 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ + 1 & $batchThreads_{t+1}$ = $batchThreads_{t}$ + 1 \\\hline
-    6 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ + 1 & $batchThreads_{t+1}$ = $batchThreads_{t}$ - 1 \\\hline
-    7 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ - 1  & $batchThreads_{t+1}$ = $batchThreads_{t}$ + 1 \\\hline
-    8 & $interactiveThreads_{t+1}$ = $interactiveThreads_{t}$ - 1  & $batchThreads_{t+1}$ = $batchThreads_{t}$ - 1 \\
-    \hline
+  \hline
+  \thead{Action} & \thead{Effect on \ Interactive Threads} & \thead{Effect on \ Batch Threads} \\
+  \hline
+  0 & No change & No change \\
+  1 & Increase by 1 & No change \\
+  2 & Decrease by 1 & No change \\
+  3 & No change & Increase by 1 \\
+  4 & No change & Decrease by 1 \\
+  5 & Increase by 1 & Increase by 1 \\
+  6 & Increase by 1 & Decrease by 1 \\
+  7 & Decrease by 1 & Increase by 1 \\
+  8 & Decrease by 1 & Decrease by 1 \\
+  \hline
   \end{tabular}
-\end{table}
+  \end{table}
 
-\section{Implementation}
+  Table \ref{table:action_space} illustrates the feasible actions within the action space. Each action corresponds to a potential adjustment in the number of interactive and batch threads. The table enumerates nine distinct actions, each with its respective effect on the number of interactive threads and batch threads.
+
+  Mathematically, the set of actions $A$ is defined as $A = \{0,1,2,3,4,5,6,7,8\}$ for a given state $s_t \in S$.
+
+\subsection{Reward}
+
+\begin{algorithm}[ht]
+  \caption{Reward Calculation Algorithm}
+  \label{algo:reward_calculation}
+  \SetAlgoLined
+  \KwIn{System statistics: $\text{stat}$}
+  \KwOut{Reward value: $\text{reward}$}
+  
+  Initialize variables: $\text{lat} \leftarrow \text{stat.tailLatency}$, $\text{tp} \leftarrow \text{stat.throughput}$, $\text{max\_scale\_lat} \leftarrow 1000$, $\text{max\_scale\_tp} \leftarrow 10$, $\text{min\_scale} \leftarrow 1$, $\text{lat\_goal} \leftarrow 200$, $\text{tp\_goal} \leftarrow 250000$, $\text{lat\_penalty} \leftarrow 500.0$, $\text{tp\_penalty} \leftarrow 5000.0$\;
+  
+  \If{$\text{lat} > \text{max\_latency}$}{
+      $\text{lat} \leftarrow \text{max\_latency}$ \tcp*{Cap latency to maximum value}
+  }
+  
+  \If{$\text{tp} > \text{max\_throughput}$}{
+      $\text{tp} \leftarrow \text{max\_throughput}$ \tcp*{Cap throughput to maximum value}
+  }
+  
+  Scale latency and throughput:
+  $\text{lat} \leftarrow \text{stat.tailLatency} == 0 \, ? \, 0 \, : \, ((\text{max\_scale\_lat} - \text{min\_scale}) \times (\text{lat} - \text{min\_value}) / (\text{max\_latency} - \text{min\_value})) + \text{min\_scale}$\;
+  $\text{tp} \leftarrow \text{stat.throughput} == 0 \, ? \, 0 \, : \, ((\text{max\_scale\_tp} - \text{min\_scale}) \times (\text{tp} - \text{min\_value}) / (\text{max\_throughput} - \text{min\_value})) + \text{min\_scale}$\;
+  $\text{lat\_goal} \leftarrow ((\text{max\_scale\_lat} - \text{min\_scale}) \times (\text{lat\_goal} - \text{min\_value}) / (\text{max\_latency} - \text{min\_value})) + \text{min\_scale}$\;
+  $\text{tp\_goal} \leftarrow ((\text{max\_scale\_tp} - \text{min\_scale}) \times (\text{tp\_goal} - \text{min\_value}) / (\text{max\_throughput} - \text{min\_value})) + \text{min\_scale}$\;
+  
+  Calculate errors:
+  $\text{error\_lat} \leftarrow |\text{lat} - \text{lat\_goal}|$\;
+  $\text{error\_tp} \leftarrow |\text{tp} - \text{tp\_goal}|$\;
+  
+  Calculate reward:
+  \eIf{$\text{lat} \leq \text{lat\_goal}$ \textbf{and} $\text{tp} \geq \text{tp\_goal}$}{
+      $\text{reward} \leftarrow 10 \times \text{error\_lat} + \text{error\_tp}$ \tcp*{High reward for meeting both latency and throughput goals}
+  }{
+      \eIf{$\text{lat} > \text{lat\_goal}$ \textbf{and} $\text{tp} < \text{tp\_goal}$}{
+          $\text{reward} \leftarrow -1 \times (\text{lat\_penalty} \times \text{error\_lat} + \text{tp\_penalty} \times \text{error\_tp})$ \tcp*{Penalize for high latency and low throughput}
+      }{
+          \eIf{$\text{lat} > \text{lat\_goal}$}{
+              $\text{reward} \leftarrow -1 \times \text{lat\_penalty} \times \text{error\_lat}$ \tcp*{Penalize for high latency}
+          }{
+              $\text{reward} \leftarrow -1 \times \text{tp\_penalty} \times \text{error\_tp}$ \tcp*{Penalize for low throughput}
+          }
+      }
+  }
+\end{algorithm}
+
+The reward calculation algorithm (Algorithm \ref{algo:reward_calculation}) takes statistics from the system and computes the reward based on certain criteria.
+
+\begin{enumerate}
+  \item Lines 1-4: Retrieve statistics and set goals for latency and throughput.
+  \item Lines 5-8: Ensure that statistics are within specified bounds.
+  \item Lines 9-12: Scale latency and throughput based on predefined values.
+  \item Lines 13-14: Calculate errors between actual and goal values for latency and throughput.
+  \item Lines 16-25: Determine the reward based on error values and predefined penalties.
+\end{enumerate}
+
+
+% Function Approximation
+
+% Q-Learning Algorithm
+
+% \section{Implementation}
