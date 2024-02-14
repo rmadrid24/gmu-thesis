@@ -238,35 +238,28 @@ where $s_t \in S$ represents the state space. The tuple encapsulates the key fea
 \subsection{Reward}
 
 \begin{algorithm}[ht]
+  % \small
   \caption{Reward Calculation Algorithm}
   \label{algo:reward_calculation}
   \SetAlgoLined
   \KwIn{System statistics: $\text{stat}$}
   \KwOut{Reward value: $\text{reward}$}
-  
-  Initialize variables: $\text{lat} \leftarrow \text{stat.tailLatency}$, $\text{tp} \leftarrow \text{stat.throughput}$, $\text{max\_scale\_lat} \leftarrow 1000$, $\text{max\_scale\_tp} \leftarrow 10$, $\text{min\_scale} \leftarrow 1$, $\text{lat\_goal} \leftarrow 200$, $\text{tp\_goal} \leftarrow 250000$, $\text{lat\_penalty} \leftarrow 500.0$, $\text{tp\_penalty} \leftarrow 5000.0$\;
-  
-  \If{$\text{lat} > \text{max\_latency}$}{
-      $\text{lat} \leftarrow \text{max\_latency}$ \tcp*{Cap latency to maximum value}
-  }
-  
-  \If{$\text{tp} > \text{max\_throughput}$}{
-      $\text{tp} \leftarrow \text{max\_throughput}$ \tcp*{Cap throughput to maximum value}
-  }
-  
-  Scale latency and throughput:
-  $\text{lat} \leftarrow \text{stat.tailLatency} == 0 \, ? \, 0 \, : \, ((\text{max\_scale\_lat} - \text{min\_scale}) \times (\text{lat} - \text{min\_value}) / (\text{max\_latency} - \text{min\_value})) + \text{min\_scale}$\;
-  $\text{tp} \leftarrow \text{stat.throughput} == 0 \, ? \, 0 \, : \, ((\text{max\_scale\_tp} - \text{min\_scale}) \times (\text{tp} - \text{min\_value}) / (\text{max\_throughput} - \text{min\_value})) + \text{min\_scale}$\;
+  \tcc{Initialize variables}
+  $\text{max\_scale\_lat} \leftarrow 1000$, $\text{max\_scale\_tp} \leftarrow 10$, $\text{min\_scale} \leftarrow 1$, $\text{lat\_goal} \leftarrow 200$, $\text{tp\_goal} \leftarrow 250000$, $\text{lat\_penalty} \leftarrow 500.0$, $\text{tp\_penalty} \leftarrow 5000.0$\;
+    
+  \tcc{Scale observed and target latency and throughput}
+  $\text{lat} \leftarrow ((\text{max\_scale\_lat} - \text{min\_scale}) \times (\text{stat.tailLatency} - \text{min\_value}) / (\text{max\_latency} - \text{min\_value})) + \text{min\_scale}$\;
+  $\text{tp} \leftarrow ((\text{max\_scale\_tp} - \text{min\_scale}) \times (\text{stat.throughput} - \text{min\_value}) / (\text{max\_throughput} - \text{min\_value})) + \text{min\_scale}$\;
   $\text{lat\_goal} \leftarrow ((\text{max\_scale\_lat} - \text{min\_scale}) \times (\text{lat\_goal} - \text{min\_value}) / (\text{max\_latency} - \text{min\_value})) + \text{min\_scale}$\;
   $\text{tp\_goal} \leftarrow ((\text{max\_scale\_tp} - \text{min\_scale}) \times (\text{tp\_goal} - \text{min\_value}) / (\text{max\_throughput} - \text{min\_value})) + \text{min\_scale}$\;
-  
-  Calculate errors:
+    
+  \tcc{Calculate errors}
   $\text{error\_lat} \leftarrow |\text{lat} - \text{lat\_goal}|$\;
   $\text{error\_tp} \leftarrow |\text{tp} - \text{tp\_goal}|$\;
-  
-  Calculate reward:
+    
+  \tcc{Calculate reward}
   \eIf{$\text{lat} \leq \text{lat\_goal}$ \textbf{and} $\text{tp} \geq \text{tp\_goal}$}{
-      $\text{reward} \leftarrow 10 \times \text{error\_lat} + \text{error\_tp}$ \tcp*{High reward for meeting both latency and throughput goals}
+      $\text{reward} \leftarrow 10 \times (\text{error\_lat} + \text{error\_tp}$) \tcp*{High reward for meeting both latency and throughput goals}
   }{
       \eIf{$\text{lat} > \text{lat\_goal}$ \textbf{and} $\text{tp} < \text{tp\_goal}$}{
           $\text{reward} \leftarrow -1 \times (\text{lat\_penalty} \times \text{error\_lat} + \text{tp\_penalty} \times \text{error\_tp})$ \tcp*{Penalize for high latency and low throughput}
@@ -278,18 +271,48 @@ where $s_t \in S$ represents the state space. The tuple encapsulates the key fea
           }
       }
   }
+
 \end{algorithm}
 
-The reward calculation algorithm (Algorithm \ref{algo:reward_calculation}) takes statistics from the NVM Middleware and computes the reward based on certain criteria.
+To guide the optimization process of the reinforcement learning agent, we establish an algorithm (Algorithm \ref{algo:reward_calculation}) to calculate a reward value based on observed and target latency and throughput metrics. This algorithm, outlined below, serves as a crucial component in training the RL agent to make informed decisions.
 
 \begin{enumerate}
-  \item Lines 1-4: Retrieve statistics and set goals for latency and throughput.
-  \item Lines 5-8: Ensure that statistics are within specified bounds.
-  \item Lines 9-12: Scale latency and throughput based on predefined values.
-  \item Lines 13-14: Calculate errors between actual and goal values for latency and throughput.
-  \item Lines 16-25: Determine the reward based on error values and predefined penalties.
+  \item Lines 1-5 define goals, scaling factors, and penalties. The observed and target latency ($lat$, $lat\_goal$) and throughput ($tp$, $tp\_goal$) metrics are scaled to a normalized range using scaling factors ($max\_scale\_lat$, $max\_scale\_tp$) and minimum scale ($min\_scale$). This normalization process ensures that both metrics contribute proportionally to the reward calculation.
+  \item Lines 6-7 compare the scaled latency ($lat$) and throughput ($tp$) metrics against the scaled target values for latency ($lat\_goal$) and throughput ($tp\_goal$). The absolute differences between observed and target values are computed to quantify the error in latency ($error\_lat$) and throughput ($error\_tp$).
+  \item Lines 8-12 determine the reward based on three distinct scenarios. Firstly, if both latency and throughput goals are achieved, a high positive reward is assigned. Secondly, if both goals are not met, a low negative reward is assigned, taking into account both latency and throughput errors. The disparity in penalties, represented by $lat_penalty$ and $tp_penalty$, ensures that both types of errors contribute proportionately to the overall reward. Thirdly, if only the latency goal remains unmet, a low negative reward is assigned, incorporating the latency penalty and error. Finally, if only the throughput goal is unmet, a similar low negative reward is assigned, encompassing the throughput penalty and error.
 \end{enumerate}
 
+% \begin{enumerate}
+%   \item \textbf{Initialization:}
+%   \begin{itemize}
+%       \item The system records observed latency ($lat$) and throughput ($tp}$) metrics from its operation. 
+%       \item Additionally, predefined parameters such as maximum latency ($\text{max\_latency}$) and maximum throughput ($\text{max\_throughput}$) are set to define operational constraints.
+%   \end{itemize}
+  
+%   \item \textbf{Scaling:}
+%   \begin{itemize}
+%       \item The observed latency and throughput metrics are scaled to a normalized range using predefined scaling factors ($\text{max\_scale\_lat}$, $\text{max\_scale\_tp}$) and minimum scale ($\text{min\_scale}$). This normalization process ensures that both metrics contribute proportionally to the reward calculation.
+%   \end{itemize}
+  
+%   \item \textbf{Error Calculation:}
+%   \begin{itemize}
+%       \item The scaled latency and throughput metrics are compared against predefined target values for latency ($\text{lat\_goal}$) and throughput ($\text{tp\_goal}$).
+%       \item The absolute differences between observed and target values are computed to quantify the error in latency ($\text{error\_lat}$) and throughput ($\text{error\_tp}$).
+%   \end{itemize}
+  
+%   \item \textbf{Reward Calculation:}
+%   \begin{itemize}
+%       \item Based on the error values, a reward ($\text{reward}$) is computed to reflect how well the system meets its performance targets.
+%       \item The reward calculation incorporates penalty factors ($\text{lat\_penalty}$, $\text{tp\_penalty}$) to penalize deviations from target values.
+%       \item The reward value is adjusted based on predefined penalty factors if specific conditions are met, ensuring that the RL agent receives appropriate feedback for its actions.
+%   \end{itemize}
+  
+%   \item \textbf{Learning Update:}
+%   \begin{itemize}
+%       \item The computed reward value serves as feedback for the RL agent, guiding its learning process.
+%       \item The RL agent uses the reward signal to update its policy, aiming to maximize cumulative rewards over time and optimize system performance.
+%   \end{itemize}
+% \end{enumerate}
 
 % Function Approximation
 
