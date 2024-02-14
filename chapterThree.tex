@@ -279,40 +279,12 @@ To guide the optimization process of the reinforcement learning agent, we establ
 \begin{enumerate}
   \item Lines 1-5 define goals, scaling factors, and penalties. The observed and target latency ($lat$, $lat\_goal$) and throughput ($tp$, $tp\_goal$) metrics are scaled to a normalized range using scaling factors ($max\_scale\_lat$, $max\_scale\_tp$) and minimum scale ($min\_scale$). This normalization process ensures that both metrics contribute proportionally to the reward calculation.
   \item Lines 6-7 compare the scaled latency ($lat$) and throughput ($tp$) metrics against the scaled target values for latency ($lat\_goal$) and throughput ($tp\_goal$). The absolute differences between observed and target values are computed to quantify the error in latency ($error\_lat$) and throughput ($error\_tp$).
-  \item Lines 8-12 determine the reward based on three distinct scenarios. Firstly, if both latency and throughput goals are achieved, a high positive reward is assigned. Secondly, if both goals are not met, a low negative reward is assigned, taking into account both latency and throughput errors. The disparity in penalties, represented by $lat_penalty$ and $tp_penalty$, ensures that both types of errors contribute proportionately to the overall reward. Thirdly, if only the latency goal remains unmet, a low negative reward is assigned, incorporating the latency penalty and error. Finally, if only the throughput goal is unmet, a similar low negative reward is assigned, encompassing the throughput penalty and error.
+  \item Lines 8-12 determine the reward based on three distinct scenarios. Firstly, if both latency and throughput goals are achieved, a high positive reward is assigned. Secondly, if both goals are not met, a low negative reward is assigned, taking into account both latency and throughput errors. The disparity in penalties, represented by $lat\_penalty$ and $tp\_penalty$, ensures that both types of errors contribute proportionately to the overall reward. Thirdly, if only the latency goal remains unmet, a low negative reward is assigned, incorporating the latency penalty and error. Finally, if only the throughput goal is unmet, a similar low negative reward is assigned, encompassing the throughput penalty and error.
 \end{enumerate}
 
-% \begin{enumerate}
-%   \item \textbf{Initialization:}
-%   \begin{itemize}
-%       \item The system records observed latency ($lat$) and throughput ($tp}$) metrics from its operation. 
-%       \item Additionally, predefined parameters such as maximum latency ($\text{max\_latency}$) and maximum throughput ($\text{max\_throughput}$) are set to define operational constraints.
-%   \end{itemize}
-  
-%   \item \textbf{Scaling:}
-%   \begin{itemize}
-%       \item The observed latency and throughput metrics are scaled to a normalized range using predefined scaling factors ($\text{max\_scale\_lat}$, $\text{max\_scale\_tp}$) and minimum scale ($\text{min\_scale}$). This normalization process ensures that both metrics contribute proportionally to the reward calculation.
-%   \end{itemize}
-  
-%   \item \textbf{Error Calculation:}
-%   \begin{itemize}
-%       \item The scaled latency and throughput metrics are compared against predefined target values for latency ($\text{lat\_goal}$) and throughput ($\text{tp\_goal}$).
-%       \item The absolute differences between observed and target values are computed to quantify the error in latency ($\text{error\_lat}$) and throughput ($\text{error\_tp}$).
-%   \end{itemize}
-  
-%   \item \textbf{Reward Calculation:}
-%   \begin{itemize}
-%       \item Based on the error values, a reward ($\text{reward}$) is computed to reflect how well the system meets its performance targets.
-%       \item The reward calculation incorporates penalty factors ($\text{lat\_penalty}$, $\text{tp\_penalty}$) to penalize deviations from target values.
-%       \item The reward value is adjusted based on predefined penalty factors if specific conditions are met, ensuring that the RL agent receives appropriate feedback for its actions.
-%   \end{itemize}
-  
-%   \item \textbf{Learning Update:}
-%   \begin{itemize}
-%       \item The computed reward value serves as feedback for the RL agent, guiding its learning process.
-%       \item The RL agent uses the reward signal to update its policy, aiming to maximize cumulative rewards over time and optimize system performance.
-%   \end{itemize}
-% \end{enumerate}
+\subsection{Training the agent with Q-Learning and Function Approximation}
+
+
 
 % Function Approximation
 
