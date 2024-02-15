@@ -41,12 +41,12 @@ The NVM Middleware leverage insights about the workload characteristics, resourc
 
 \begin{figure}[ht]
   \centering
-  \label{images:nvm_architecture}
-  \includegraphics[scale=0.8]{images/nvm_design.png}
+  \includegraphics[scale=1]{images/nvm_design.png}
   \caption[NVM Middleware Architecture]{NVM Middleware Architecture}
+  \label{fig:nvm_architecture}
 \end{figure}
 
-Figure \ref{images:nvm_architecture} provides an overview of the NVM Middleware architecture. Positioned as a middle layer connecting user applications with Optane PMM, its design is tailored for seamless integration within a storage service, serving as an optimization layer specifically targeting Optane PMM. It comprises a request handler, two concurrency thread pools, and a monitoring and resource management module.
+Figure \ref{fig:nvm_architecture} provides an overview of the NVM Middleware architecture. Positioned as a middle layer connecting user applications with Optane PMM, its design is tailored for seamless integration within a storage service, serving as an optimization layer specifically targeting Optane PMM. It comprises a request handler, two concurrency thread pools, and a monitoring and resource management module.
 
 The request handler serves as the primary interface for handling user I/O requests. Upon receipt, it segregates requests into two distinct non-blocking First-In-First-Out (FIFO) queues: one tailed for latency-sensitive requests and the other for throughput-centric ones. Leveraging insights into workload characteristics, the handler intelligently allocates requests to the appropriate queue. Moreover, each queue is assigned a dedicated pool of worker threads tasked with dispatching I/O requests to Optane PMM using PMEMKV. Notably, these thread pools operate independently and are dynamically managed and scaled by the Reinforcement Learning agent to meet predetermined latency and throughput goals.
 
@@ -127,10 +127,10 @@ The $get\_stats$ function furnishes insights into the 99th percentile and throug
 
 In this section, we discuss the Q-learning algorithm used by the Reinforcement Learning agent to dynamically adjust the number of threads assigned to each thread pool. The agent’s goal is to find the best combination of threads that meets predetermined latency and throughput SLAs while minimizing contention and ensuring efficient utilization of Intel Optane PMM. 
 
-% \subsection{State Space}
-% Table \ref{table:state_space} provides an overview of the features used in our state representation. We define state s at time step t by the the following tuple st= (interactiveThreads, batchThreads, InteractiveQueueSize, batchQueueSize, interactiveBlockSize, batchBlockSize, interactiveRWRatio, batchRWRatio), where st E S.
+\subsection{Reinforcement Learning Model}
 
-\subsection{State Space}
+\subsubsection{State Space}
+% Table \ref{table:state_space} provides an overview of the features used in our state representation. We define state s at time step t by the the following tuple st= (interactiveThreads, batchThreads, InteractiveQueueSize, batchQueueSize, interactiveBlockSize, batchBlockSize, interactiveRWRatio, batchRWRatio), where st E S.
 
 % \begin{table}[ht]
 %   \centering
@@ -208,7 +208,7 @@ s_t = (& \text{interactiveThreads}_t, \text{batchThreads}_t, \text{InteractiveQu
 
 where $s_t \in S$ represents the state space. The tuple encapsulates the key features characterizing the system's current state, including the number of interactive and batch threads, number of pending requests in the queues, individual workload block sizes, and write ratio for both interactive and batch workloads.
 
-\subsection{Action Space}
+\subsubsection{Action Space}
 
 \begin{table}[ht]
   \centering
@@ -235,7 +235,7 @@ where $s_t \in S$ represents the state space. The tuple encapsulates the key fea
 
   Mathematically, the set of actions $A$ is defined as $A = \{0,1,2,3,4,5,6,7,8\}$ for a given state $s_t \in S$.
 
-\subsection{Reward}
+\subsubsection{Reward}
 
 \begin{algorithm}[ht]
   % \small
@@ -282,9 +282,37 @@ To guide the optimization process of the reinforcement learning agent, we establ
   \item Lines 8-12 determine the reward based on three distinct scenarios. Firstly, if both latency and throughput goals are achieved, a high positive reward is assigned. Secondly, if both goals are not met, a low negative reward is assigned, taking into account both latency and throughput errors. The disparity in penalties, represented by $lat\_penalty$ and $tp\_penalty$, ensures that both types of errors contribute proportionately to the overall reward. Thirdly, if only the latency goal remains unmet, a low negative reward is assigned, incorporating the latency penalty and error. Finally, if only the throughput goal is unmet, a similar low negative reward is assigned, encompassing the throughput penalty and error.
 \end{enumerate}
 
-\subsection{Training the agent with Q-Learning and Function Approximation}
+\subsection{Training Methodology}
+
+\subsubsection{Q-Learning}
+
+Pre-training modelsfgfdg
+
+Function Approximation
+
+Q-learning Algorithm
+
+\subsubsection{Environment}
+
+Describe environment here
 
 
+\subsection{Integration with the NVM Middleware}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=1]{images/rl_workflow.png}
+  \caption[RL Workflow]{RL Workflow}
+  \label{fig:rl_workflow}
+\end{figure}
+
+Figure \ref{fig:rl_workflow} offers a visual representation of the interaction between the reinforcement learning (RL) agent and the NVM Middleware. At each time step, the NVM Middleware receives a diverse influx of requests, spanning both latency-sensitive and throughput-oriented tasks. These requests necessitate translation into actionable I/O commands directed towards the Intel Optane Persistent Memory Module (PMM).
+
+Concurrently, the RL agent adeptly captures the environment's current state, leveraging real-time workloads' characteristics and performance metrics provided by the monitoring module. Utilizing this information, the agent orchestrates the selection of an optimal action, guiding the dynamic adjustment of threads within the interactive and batch thread pools. This adaptive decision-making process is exemplified by actions like augmenting the count of interactive threads to address evolving workload demands.
+
+Following action selection, the NVM Middleware's resource management module implements the chosen course of action, fine-tuning the NVM Middleware's interactive and batch threads to efficiently handle incoming user requests. Upon the completion of each time step, the action's effectiveness is rigorously assessed against predefined service level agreement (SLA) targets, yielding a reward signal generated by a reward manager.
+
+This reward serves as invaluable feedback for the RL agent, empowering iterative policy updates aimed at refining decision-making strategies in subsequent time steps. Thus, the presented framework embodies a recursive learning cycle, wherein the RL agent continuously hones its behavior through real-world interactions, ensuring adaptive responsiveness to evolving workload dynamics.
 
 % Function Approximation
 
