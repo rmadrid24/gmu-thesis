@@ -54,40 +54,6 @@ The Monitoring and Resource Management module offers an interface to monitor sys
 
 \section{Programming Interface}
 
-% \begin{table}[ht]
-%   \centering
-%   \caption{Programming Interface}
-%   \label{table:programming_interface}
-%   % Tabular environment goes AFTER the caption!
-%   \begin{adjustbox}{width=1\textwidth}
-%   \begin{tabular}{|l|l|l}
-%     % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
-%     \hline
-%     \thead{API Name} & \thead{Functionality} \\
-%     \hline
-%     \rowcolor{gray!50} % Color the header row
-%     start(db, interactiveThreads, batchThreads) & \makecell[cl] {Create PMEMKV database. \\ Start control threads. \\ Start system monitoring in Monitoring and Resource Management Module.} \\
-%     close() & \makecell[cl] {Close PMEMKV database. \\ Stop all threads. \\ Start system monitoring in Monitoring and Resource Management Module.} \\\hline
-%     \rowcolor{gray!50}
-%     get(key, mode) & Retrieves key from persistent memory. \\
-%     put(key, value, mode) & Writes key to persistent memory. \\
-%     \hline
-%     \rowcolor{gray!50}
-%     get\_stats() & Provides the 99th percentile and throughput observed by the NVM Middleware. \\
-%     get\_state() & Provides the current state within the NVM Middleware. \\
-%     \rowcolor{gray!50}
-%     perform\_action(action) & Triggers a scaling action. \\
-%     \hline
-%   \end{tabular}
-% \end{adjustbox}
-% \end{table}
-
-% Table \ref{table:programming_interface} provides an overview of the NVM Middleware application interface, which features a key-value API supplemented with functions tailored to facilitate the decision-making process associated with thread pool scaling.
-
-% The start function initializes the database utilized by PMEMKV, initializes the thread pools with an initial thread count, and triggers the system monitoring within the Monitoring and Resource Management Module. Conversely, the stop function terminates the connection with the PMEMKV database, releases resources utilized by the thread pools, and prompts the Monitoring and Resource Management to cease system monitoring. The API enables Ke-Value Store interactions via get and put functions, with the capacity to accept hints concerning the request type (e.g., latency-sensitive or throughput-oriented) to assist the request handler in queue allocation.
-
-% Moreover, the get\_stats function furnishes insights into the 99th percentile and throughput observed by the NVM Middleware at any given moment. Similarly, the get\_state function provides real-time state information as outlined in \ref{table:state_space}. Finally, the perform\_action function accepts scaling actions detailed in \ref{table:action_space} and initiates the corresponding action within the NVM Middleware.
-
 \begin{table}[ht]
   \centering
   \caption{Programming Interface}
@@ -147,40 +113,7 @@ This reward serves as invaluable feedback for the RL agent, empowering iterative
 \subsection{Reinforcement Learning Model}
 
 \subsubsection{State Space}
-% Table \ref{table:state_space} provides an overview of the features used in our state representation. We define state s at time step t by the the following tuple st= (interactiveThreads, batchThreads, InteractiveQueueSize, batchQueueSize, interactiveBlockSize, batchBlockSize, interactiveRWRatio, batchRWRatio), where st E S.
 
-% \begin{table}[ht]
-%   \centering
-%   \caption{The State Representation}
-%   \label{table:state_space}
-%   \begin{adjustbox}{width=1\textwidth}
-%   \begin{tabular}{|l|l|l|}
-%     \hline
-%     \thead{Name} & \thead{Description} & \thead{Values} \\
-%     \hline
-%     \rowcolor{gray!50}
-%     interactiveThreads & Number of (interactive) threads assigned to the interactive thread pool. & $1 \leq \text{interactiveThreads} \leq 32$ \\
-%     \hline
-%     batchThreads & Number of (batch) threads assigned to the batch thread pool. & $1 \leq \text{batchThreads} \leq 32$ \\
-%     \hline
-%     \rowcolor{gray!50}
-%     interactiveQueueSize & Number of requests in the interactive queue. & $\text{interactiveQueueSize} \in \mathbb{R}^+$ \\
-%     \hline
-%     batchQueueSize & Number of requests in the batch queue. & $\text{batchQueueSize} \in \mathbb{R}^+$ \\
-%     \hline
-%     \rowcolor{gray!50}
-%     interactiveBlockSize & Average block size of interactive workload. & $\text{interactiveBlockSize} \in \mathbb{R}^+$ \\
-%     \hline
-%     batchBlockSize & Average block size of batch workload. & $\text{batchBlockSize} \in \mathbb{R}^+$ \\
-%     \hline
-%     \rowcolor{gray!50}
-%     interactiveWriteRatio & Proportion of write requests compared to read requests in the interactive workload. & $\text{interactiveRWRatio} \in \mathbb{R}^+$ \\
-%     \hline
-%     batchWriteRatio & Proportion of write requests compared to read requests in the batch workload & $\text{batchRWRatio} \in \mathbb{R}^+$ \\
-%     \hline
-%   \end{tabular}
-%   \end{adjustbox}
-% \end{table}
 \begin{table}[ht]
   \centering
   \caption{The State Representation}
@@ -301,7 +234,7 @@ To guide the optimization process of the reinforcement learning agent, we establ
 
 \subsection{Training Methodology}
 
-\subsubsection{Environment Design and Implementation}
+\subsubsection{Environment Design}
 
 \begin{figure}[ht]
   \centering
@@ -309,10 +242,6 @@ To guide the optimization process of the reinforcement learning agent, we establ
   \caption{Overview of the Environment Architecture}
   \label{fig:rl_environment_architecture}
 \end{figure}
-
-% Figure \ref{fig:environment_architecture} presents an overview of the environment architecture devised for training and evaluating the RL agent. The environment comprises an interactive multi-threaded application, a batch multi-threaded application, the NVM Middleware, Intel Optane PMM, and the RL agent.
-
-% To mimic a multi-tenant serverless scenario, we concurrently execute both applications. Serverless traces are gathered and utilized to model the workload of each application. Each application organizes requests into 1-second intervals to simulate the RL process steps. To emulate high concurrency levels, multiple threads within each application are deployed to dispatch requests to the NVM Middleware using the aforementioned API. Meanwhile, the NVM Middleware processes these requests in accordance with the workflow outlined in the preceding section. Throughout this process, the RL agent observes the environment, collects state and reward signals, and selects actions based on its policy.
 
 The environment architecture designed for training and evaluating the RL agent is depicted in Figure \ref{fig:rl_environment_architecture}. This architecture comprises several key components, including an interactive multi-threaded application, a batch multi-threaded application, the NVM Middleware, and Intel Optane PMM.
 
@@ -329,28 +258,72 @@ In order to model the time steps inherent in an RL process, the environment orga
 
 \subsubsection{Function Approximation}
 
+To address the challenge posed by the continuous state space in our environment, traditional Q-learning approaches become impractical due to the vast number of states that cannot be feasibly mapped into a Q-table. Consequently, we employ function approximation techniques to estimate the value of each action based on the state.
 
+Specifically, we train nine separate linear regression models, each corresponding to one of the available actions, using stochastic gradient descent. This approach allows us to capture the underlying patterns in the data and generalize across states not encountered during training, enabling our agent to make informed decisions even in novel situations.
+
+However, selecting appropriate hyperparameters for our regression models presents a significant challenge. Online training alone is insufficient for accurately assessing model performance, as it can be time-consuming and computationally intensive. To overcome this limitation, we adopt a batch learning approach with offline historical data.
+
+By leveraging historical data collected from the environment, we can tune our models' hyperparameters and incorporate prior knowledge into our RL agent. This approach accelerates the learning process by bootstrapping our models with valuable insights gained from past experiences \cite{cano2017curator,vukosi2015improved}.
+
+To construct our dataset, we deploy a non-optimal agent that performs random actions in the environment, capturing state-action-reward transitions. Following established machine learning practices, we split the dataset into training and testing sets and employ 5-fold cross-validation on the training set to evaluate model performance rigorously.
+
+Additionally, we preprocess the features by standardizing them using the standard scaler and apply polynomial preprocessing to enhance the model's ability to capture nonlinear relationships within the data.
+
+
+\subsubsection{Proposed Q-Learning Algorithm}
 
 \begin{algorithm}[ht]
+  % \small
   \caption{Q-Learning Algorithm}
   \label{algo:q_learning}
   \SetAlgoLined
-  \KwIn{Environment $E$, Number of Episodes $N$, Learning Rate $\alpha$, Discount Factor $\gamma$, Exploration Rate $\epsilon$}
-  \KwOut{Learned Q-values}
-  Initialize Q-table $Q$ with random values\;
-  \For{$episode \leftarrow 1$ \KwTo $N$}{
-    Initialize state $s$\;
-    \For{$t \leftarrow 1$ \KwTo $T$}{
-      Choose action $a$ using $\epsilon$-greedy policy based on $Q$\;
-      Take action $a$, observe reward $r$ and next state $s'$\;
-      Update Q-value: $Q(s,a) \leftarrow (1-\alpha) \cdot Q(s,a) + \alpha \cdot (r + \gamma \cdot \max_a Q(s',a))$\;
-      Update state: $s \leftarrow s'$\;
+  \KwIn{Pre-trained Q-value models $M_a$ for all actions $a$}
+  \KwOut{Learned Q-value models $M_a$ for all actions $a$}
+  Initialize the training parameters $\alpha$, $\gamma$, $\epsilon$\;
+  \For{$episode \leftarrow 1$ \KwTo $E$}{
+    Reset the environment\;
+    \Repeat{episode is done}{
+      Observe the state $s_t$\;
+      \tcp{Choose action $a_t$ using the $\epsilon$-greedy policy}
+      Generate random number $r$ from uniform distribution in [0, 1]\;
+      \If{$r < \epsilon$}{
+        Select a random action $a_t$ from the action space \;
+      }
+      \Else{
+        \For{each action $a$}{
+            Predict Q-value $Q_a(s_t)$ using model $M_a$: $Q_a(s_t) \leftarrow M_a.predict(s_t)$ \;
+        }
+        Select action $a_t \leftarrow \argmax_a Q_a(s_t)$ \;
+      }
+      Take action $a_t$, observe reward $r$ and next state $s_{t+1}$\;
+      \tcp{Update the Q-value model using reward and next state}
+      \If{not done}{
+        \For{each action $a$}{
+          Predict Q-value $Q_a(s_{t+1})$ using model $M_a$: $Q_a(s_{t+1}) \leftarrow M_a.predict(s_{t+1})$ \;
+        }
+        Calculate target Q-value: $target \leftarrow r + \gamma \cdot \max_a Q_a(s_{t+1})$ \;
+      }
+      \Else{
+        Set target Q-value to the reward: $target \leftarrow r$ \;
+      }
+      Update the model for action $a_t$ with the target Q-value: $M_{a_t}.partial\_fit(s_t, target)$ \;
+      Update state: $s_t \leftarrow s_{t+1}$\;
     }
     Decrease $\epsilon$ according to exploration schedule\;
   }
 \end{algorithm}
 
+Algorithm \ref{algo:q_learning} outlines the Q-Learning process for training an agent to make optimal decisions in an environment. It takes the bootstrapped Q-value models $M_a$ for all actions $a$ and outputs the new learned models after training.
 
-\subsubsection{Proposed Q-Learning Algorithm}
+The algorithm initializes the training parameters and then iterates over a specified number of episodes. Within each episode, the environment is reset, and the agent interacts with it until the episode is complete. At each step, the agent observes the current state $s_t$, selects an action $a_t$ based on an $\epsilon$-greedy policy, takes the action, and observes the resulting reward $r$ and next state $s_{t+1}$.
 
-Describe environment here
+The Q-value models are updated based on the observed reward and next state. If the episode is not done, the target Q-value is calculated using the reward and the maximum Q-value for the next state. If the episode is done, the target Q-value is simply set to the reward.
+
+The model for the selected action $a_t$ is updated using the target Q-value, and the state is updated to the next state. Additionally, the exploration rate $\epsilon$ is decreased according to an exploration schedule.
+
+\section{Implementation}
+
+The NVM Middleware, detailed in Section 3.3, is implemented using C++. We leverage PMEMKV from the Persistent Memory Development Kit \cite{pmdk:book} to facilitate reading and writing data into Intel Optane PMM. To manage concurrent operations efficiently, we utilize the non-locking, concurrent queue provided by the Intel Threading Building Blocks \cite{tbb:online} library for both the interactive and batch queues.
+
+For the RL Environment, as described in Section 3.4.3, we adopt a hybrid approach employing C++ and Python. The environment itself is constructed in C++, aligning with the specifications outlined in Section 3.4.3. Conversely, the RL agent and the Q-Learning algorithm, also discussed in the same section, are developed using Python. We leverage the SGDRegressor model from the Scikit-learn\cite{scikitle61:online} library to facilitate the representation of our linear regression models for function approximation. Additionally, we employ Scikit-learn for hyperparameter tuning. To seamlessly integrate the C++ and Python components, we utilize pybind11\cite{pybind1111:online}.
