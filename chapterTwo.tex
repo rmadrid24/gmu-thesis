@@ -47,21 +47,84 @@ Function-as-a-service (FaaS) is the core compute engine for serverless computing
 
 \section{Reinforcement Learning}
 
-Reinforcement Learning considers a problem of a learning agent that actively learns from its own experience. Such agent interacts with its environment and periodically receives a reward signal. The agent’s goal is to maximize the rewards in the long run. However, the agent is not told which actions to take. Instead, it must discover the actions that yield the highest rewards through trial-and-error.
+Reinforcement Learning (RL) is a subfield of machine learning concerned with learning optimal decision-making policies through interactions with an environment \cite{sutton2018reinforcement}. The fundamental concept underlying RL is the notion of an agent, which takes actions in an environment and receives feedback in the form of rewards, indicating the quality of its decisions. The agent's objective is to learn a policy that maximizes cumulative rewards over time. Moreover, the agent is not provided with explicit instructions on which actions to take; instead, it must discover the actions that lead to the highest rewards by trying them.
 
-Figure 1 illustrates a typical reinforcement learning scenario. The agent interacts with the environment in discrete time steps. At each time step t, the agent senses the environment’s current state st E S, where S represent the full set of environment states. It then chooses an action at E A(st), where A(st) represents the set of all actions available in the current state. The environment moves to a new state st+1, and the agent receives a reward rt associated with the transition (st,at,st+1).
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=1]{images/rl-workflow.png}
+    \caption{RL Workflow}
+    \label{fig:sutton_rl_workflow}
+\end{figure}
 
-At any given time, the agent’s behavior is defined by a policy. Roughly speaking, a policy is a mapping from perceived states of the environment to actions to be taken when in those states. The agent’s purpose is to learn the optimal, or near-optimal, policy that maximizes total reward it receives in the long run. 
+Figure \ref{fig:sutton_rl_workflow} presents a schematic representation of a standard reinforcement learning scenario. In discrete time steps, the agent perceives the current state $s_t$ from the set of all possible states $S$. It then selects an action $a_t$ from the available actions $A(s_t)$ in the current state. The environment transitions to a new state $s_{t+1}$, and the agent receives a reward $r_t$ associated with the transition $(s_t, a_t, s_{t+1})$.
 
-Exploration vs Exploitation tradeoff
-One of the challenges that arises in Reinforcement Learning is the choice between exploiting a familiar action known for a reward and exploring unfamiliar actions for unknown rewards, known as the exploration-exploitation tradeoff. The dilemma is that the agent cannot pursue exploration nor exploitation exclusively without failing the task. Instead, it must find a balance between exploration and exploitation. The agent must try a variety of actions to gather enough information and progressively favor for those that appear to be the best.
+The agent's behavior is governed by its policy, which maps perceived states to actions. The ultimate aim is to learn an optimal or near-optimal policy that maximizes the cumulative reward. 
 
-QLearning
-Q-Learning is a model-free reinforcement learning algorithm, where the agent learns which is the best action to take given the current state. The agent assess the quality of an action by means of a quality-function (Q-function) Q(s,a), denoting the expected total discounted reward if the agent takes action a on state s and acts optimally thereafter. Given the Q-function, the agent’s optimal policy is to choose the action that yields the highest reward.
 
-Figure 4 illustrates the Q-Learning algorithm. The Q-function can be implemented using a simple lookup table. At each step, the agent selects an action a, and observes the reward r and the new state st+1. Then, the agent applies one-step Q-learning, given by:
-Qlearning formula
-Where 0<alpha<1 is the learning rate and determines to what extent new information overrides the old one. The learned Q-function directly approximates the optimal Q-function, independent of the policy being followed.
+\subsubsection*{Q-Learning}
 
-%The Q-function can be represented using a simple Q-Table. However, when the state-action space is large, i.e., greater than 10\e{6} states, keeping a lookup table becomes intractable. To solve this problem, the agent needs to build an approximation of the true Q-function using a function approximator.
-% \section{System Description}
+One of the foundational algorithms in RL is Q-Learning, introduced by Watkins in 1989 \cite{watkins1989learning}. The algorithm belongs to the class of model-free RL algorithms, meaning it learns directly from experience without requiring a model of the environment dynamics \cite{russel2020ai}.
+
+At the core of Q-Learning is the Q-value function, denoted as $Q(s, a)$, which represents the expected cumulative reward the agent will receive by taking action $a$ in state $s$ and following an optimal policy thereafter. The objective of Q-Learning is to iteratively update the Q-values based on observed transitions and rewards, eventually converging to the optimal Q-values that maximize long-term rewards.
+
+The Q-Learning algorithm proceeds as follows: the agent interacts with the environment by selecting actions based on its current estimate of the Q-values. Upon taking an action, the agent observes the resulting reward and the next state. It then updates the Q-value of the previous state-action pair using the observed reward and the estimated value of the next state.
+
+The Q-value update rule in Q-Learning is based on the Bellman equation, which expresses the relationship between the Q-values of successive states \cite{russel2020ai}:
+
+\[
+Q(s, a) \leftarrow (1 - \alpha) \cdot Q(s, a) + \alpha \cdot \left( r + \gamma \cdot \max_{a'} Q(s', a') \right)
+\]
+
+Here, $\alpha$ is the learning rate, determining the extent to which new information overrides the old one, and $\gamma$ is the discount factor, representing the importance of future rewards relative to immediate rewards. The term $r + \gamma \cdot \max_{a'} Q(s', a')$ is known as the temporal-difference (TD) target, combining the immediate reward $r$ with the discounted maximum Q-value of the next state $s'$ \cite{russel2020ai}.
+
+% Q-Learning, a model-free reinforcement learning algorithm, is employed by the agent to determine the best action given the current state. The agent evaluates action quality using a quality-function (Q-function) $Q(s, a)$, representing the expected total discounted reward if the agent selects action $a$ in state $s$ and acts optimally thereafter. 
+
+% One of the foundational algorithms in RL is Q-Learning, introduced by Watkins in 1989 \cite{watkins1989learning}. Q-Learning is a model-free algorithm that learns the value of taking an action in a particular state, known as the Q-value, and iteratively refines these values through experience. The Q-value represents the expected cumulative reward the agent will receive by taking an action in a given state and following an optimal policy thereafter.
+
+% The Q-Learning algorithm (illustrated in Figure \ref{algo:q_learning}) involves iterative updates to the Q-function. At each step, the agent selects an action, observes the reward and new state, and then applies one-step Q-learning. The update is governed by the Q-learning formula, where the learning rate ($\alpha$) determines the extent to which new information overrides old data. This learned Q-function approximates the optimal Q-function, irrespective of the policy being followed.
+
+\subsubsection{Linear Regression Models in Reinforcement Learning}
+
+One of the key advantages of Q-Learning is its simplicity and ease of implementation. It requires only a table to store the Q-values, making it computationally efficient for small state and action spaces. However, Q-Learning faces challenges in environments with large state spaces, as maintaining a lookup table becomes infeasible due to memory and computational constraints.
+
+Function approximation is a fundamental technique in reinforcement learning (RL) aimed at approximating the Q-Value function when dealing with large state or action spaces where tabular representations become impractical \cite{russel2020ai}. This approach allows RL agents to generalize from observed states to unseen states, facilitating decision-making in unexplored regions of the state space.
+
+In the context of RL, linear regression models are commonly used for function approximation \cite{sutton2018reinforcement}.  These models approximate the Q-value function by leveraging a weighted linear combination of features, with each feature capturing a distinct aspect of the state space. Employing gradient-descent methods, notably stochastic gradient descent, enables iterative refinement of the parameters governing the linear function, aimed at minimizing a predefined loss function. This iterative optimization process empowers the model to progressively enhance its predictive accuracy and capture intricate patterns within the state-action space.
+
+Hyperparameter tuning is a critical aspect of training linear regression models in RL \cite{bergstra2012random}. Hyperparameters, such as the learning rate, regularization strength, and feature scaling, significantly impact the performance and convergence of the models. A systematic approach to hyperparameter tuning involves experimenting with different combinations of hyperparameters, evaluating the performance of the trained models on a validation set, and selecting the optimal hyperparameters based on predefined criteria, such as validation error or performance metrics \cite{russel2020ai}.
+
+\subsubsection{Exploration-Exploitation Tradeoff}
+
+The exploration-exploitation tradeoff poses a significant challenge in reinforcement learning \cite{sutton2018reinforcement}. The agent must strike a balance between exploring unfamiliar actions to gather information and exploiting known actions for immediate rewards. Finding this balance is crucial for effective learning and task performance, as the agent gradually favors actions with higher expected rewards.
+
+One classic strategy for balancing exploration and exploitation is the epsilon-greedy (e-greedy) algorithm \cite{sutton2018reinforcement}. The e-greedy policy selects the action that maximizes the estimated value with probability $1 - \epsilon$ (exploitation) and selects a random action with probability $\epsilon$ (exploration). This approach ensures that the agent continues to explore the environment while gradually exploiting more rewarding actions as it gains knowledge.
+
+Decayed e-greedy methods aim to strike a balance between exploration and exploitation by gradually reducing the exploration rate $\epsilon$ as the agent gains more experience or as the training progresses \cite{sutton2018reinforcement}. This decay encourages the agent to explore the environment more extensively in the early stages of learning while gradually shifting towards exploitation as it becomes more knowledgeable.
+
+\subsubsection{Reward shaping}
+
+Reward shaping is a technique in reinforcement learning (RL) aimed at accelerating learning by modifying the reward signal provided to the agent. Traditional RL algorithms rely solely on sparse reward signals, which can make learning slow and inefficient, especially in complex environments. Reward shaping addresses this issue by providing additional, shaped rewards that guide the agent towards desirable behaviors. These shaped rewards are designed to provide more informative feedback to the agent, encouraging it to explore the state-action space more effectively. However, reward shaping must be carefully designed to avoid unintended consequences such as overfitting to the shaped rewards or incentivizing undesirable behaviors \cite{russel2020ai}.
+
+% Reinforcement Learning considers a problem of a learning agent that actively learns from its own experience \cite{sutton2018reinforcement}. Such agent interacts with its environment and periodically receives a reward signal. The agent’s goal is to maximize the rewards in the long run. However, the agent is not told which actions to take. Instead, it must discover the actions that yield the highest rewards through trial-and-error.
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[scale=1]{images/rl-workflow.png}
+%     \caption[RL Workflow]{RL Workflow}
+%     \label{fig:sutton_rl_workflow}
+% \end{figure}
+
+% Figure \ref{fig:sutton_rl_workflow} illustrates a typical reinforcement learning scenario. The agent interacts with the environment in discrete time steps. At each time step t, the agent senses the environment’s current state st E S, where S represent the full set of environment states. It then chooses an action at E A(st), where A(st) represents the set of all actions available in the current state. The environment moves to a new state st+1, and the agent receives a reward rt associated with the transition (st,at,st+1).
+
+% At any given time, the agent’s behavior is defined by a policy. Roughly speaking, a policy is a mapping from perceived states of the environment to actions to be taken when in those states. The agent’s purpose is to learn the optimal, or near-optimal, policy that maximizes total reward it receives in the long run. 
+% QLearning
+% Q-Learning is a model-free reinforcement learning algorithm, where the agent learns which is the best action to take given the current state. The agent assess the quality of an action by means of a quality-function (Q-function) Q(s,a), denoting the expected total discounted reward if the agent takes action a on state s and acts optimally thereafter. Given the Q-function, the agent’s optimal policy is to choose the action that yields the highest reward.
+
+% Figure 4 illustrates the Q-Learning algorithm. The Q-function can be implemented using a simple lookup table. At each step, the agent selects an action a, and observes the reward r and the new state st+1. Then, the agent applies one-step Q-learning, given by:
+% Qlearning formula
+% Where 0<alpha<1 is the learning rate and determines to what extent new information overrides the old one. The learned Q-function directly approximates the optimal Q-function, independent of the policy being followed.
+
+% The Q-function can be represented using a simple Q-Table. However, when the state-action space is large, i.e., greater than $10^{6}$ states, keeping a lookup table becomes intractable. To solve this problem, the agent needs to build an approximation of the true Q-function using a function approximator.
+
+% Exploration vs Exploitation tradeoff
+% One of the challenges that arises in Reinforcement Learning is the choice between exploiting a familiar action known for a reward and exploring unfamiliar actions for unknown rewards, known as the exploration-exploitation tradeoff. The dilemma is that the agent cannot pursue exploration nor exploitation exclusively without failing the task. Instead, it must find a balance between exploration and exploitation. The agent must try a variety of actions to gather enough information and progressively favor for those that appear to be the best.

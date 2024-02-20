@@ -276,7 +276,7 @@ Additionally, we preprocess the features by standardizing them using the standar
 \begin{algorithm}[ht]
   % \small
   \caption{Q-Learning Algorithm}
-  \label{algo:q_learning}
+  \label{algo:q_learning_mw}
   \SetAlgoLined
   \KwIn{Pre-trained Q-value models $M_a$ for all actions $a$}
   \KwOut{Learned Q-value models $M_a$ for all actions $a$}
@@ -314,7 +314,7 @@ Additionally, we preprocess the features by standardizing them using the standar
   }
 \end{algorithm}
 
-Algorithm \ref{algo:q_learning} outlines the Q-Learning process for training an agent to make optimal decisions in an environment. It takes the bootstrapped Q-value models $M_a$ for all actions $a$ and outputs the new learned models after training.
+Algorithm \ref{algo:q_learning_mw} outlines the Q-Learning process for training an agent to make optimal decisions in an environment. It takes the bootstrapped Q-value models $M_a$ for all actions $a$ and outputs the new learned models after training.
 
 The algorithm initializes the training parameters and then iterates over a specified number of episodes. Within each episode, the environment is reset, and the agent interacts with it until the episode is complete. At each step, the agent observes the current state $s_t$, selects an action $a_t$ based on an $\epsilon$-greedy policy, takes the action, and observes the resulting reward $r$ and next state $s_{t+1}$.
 
