@@ -20,21 +20,52 @@
 % A first, optional argument in [ ] is the title as displayed in the table of contents
 % The second argument is the title as displayed here.  Use \\ as appropriate in
 %   this title to get desired line breaks
-\chapter[Background and Methodology]{Background and Methodology}
+\chapter[Background]{Background}
 
 \section{Intel Optane DC Persistent Memory}
 
-Persistent memory, also known as Non-volatile Memory (NVM), is a new addition to the memory/storage hierarchy shown in Figure 2 that fills the performance/capacity gap between DRAM and storage by combining traits of both worlds. Like DRAM, persistent memory comes in the form of Dual In-line Memory Modules (DIMMs) that reside on the memory bus. Therefore, applications can access persistent memory like they do with traditional DRAM, eliminating the need to page blocks of data back and forth between memory and storage. However, unlike DRAM DIMMs, persistent memory DIMMs offer greater capacity and can retain data when the system is shutdown or loses power. Thus, persistent memory can dramatically increase system performance and enable a fundamental change in computing architecture.
+Intel Optane Persistent Memory (PMM) represents a significant advancement in persistent memory technology, bridging the gap between dynamic random-access memory (DRAM) and storage devices \cite{scargall2020pmem}. This section provides an overview of the architecture, features, benefits, and applications of Intel Optane PMM.
 
-Intel Optane DC Persistent Memory Module (PMM) is the first commercially available persistent memory technology. This technology comes in DIMM form factor and embeds capacities up to 512GiB. Intel Cascade Lake processors are the first CPUs to support Intel Optane PMM. Like traditional DRAM, the Optane DIMM sits on the memory bus and connects to the processor's integrated memory controller (iMC). Figure 1 shows a typical system configuration of a hybrid node with DRAM and PMM. A user can have up to one Intel Optane DIMM per channel and up to six on a single socket providing capacities up to 3TiB per socket. Thus, an 8-socket system could access up to 24TB of persistent memory.
+\subsection{Overview of Intel Optane DC PMM}
 
-To ensure persistence, Intel Optane PMM sits within Intel’s asynchronous DRAM refresh (ADR) domain. Intel’s ADR domain ensures that CPU stores that reach the ADR domain will survive a power failure. The iMC maintains read and write pending queues (RPQs and WPQs) for each Optane DIMM and the ADR domain includes WPQs. Once the data reaches the WPQs, the ADR domain ensures that the iMC will flush the updates to persistent memory media on power failure.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.6]{images/pmem_storage_pyramid.jpg}
+    \caption{Memory Hierarchy. Taken from \cite{Introduc86:online}}
+    \label{fig:pmem_storage_pyramid}
+\end{figure}
 
-The iMC communicates with the Optane DIMM using the DDR-T protocol in cache line access granularity (64B) (Figure 2). The memory access to NVDIMM arrive first at an Apache Pass Controller which coordinates access to the Optane Media. Similar to SSDs, the Optane DIMM perforsms address translation for wear-leveling and bad block management. Thus, it keeps an address indirection table (AIT) for this translation. 
+Persistent memory, also referred to as Non-Volatile Memory (NVM), represents a significant evolution in the memory/storage hierarchy (Figure \ref{fig:pmem_storage_pyramid}), addressing the performance and capacity gap between dynamic random-access memory (DRAM) and traditional storage mediums. This innovative technology combines the characteristics of both DRAM and storage, offering the speed of DRAM and the non-volatile nature of storage devices \cite{scargall2020pmem}.
 
-The actual access to storage media occurs after address translation. Intel Optane DIMM physical media access granularity is 256 bytes. Thus, the Controller translates smaller requests into largest 256-byte accesses, causing write amplification as small stores become read-modify-write operations. The controller has a small write-combining buffer to merge adjacent writes.
+Like DRAM, persistent memory is available in the form of Dual In-line Memory Modules (DIMMs), which are directly connected to the memory bus. This direct connection enables applications to access persistent memory with the same ease as traditional DRAM, eliminating the need for frequent data transfers between memory and storage. However, unlike DRAM, persistent memory DIMMs provide significantly greater capacity and retain data even when power is removed, thereby enhancing system performance and enabling fundamental changes in computing architecture \cite{rudoff2017persistent,scargall2020pmem}.
 
-Intel Optane PMem can operate in two modes: memory and App Direct. Memory mode uses Optane PMem as a large capacity main memory without persistence. DRAM is not visible to the users, and instead it serves as a cache for Optane PMem that is transparently managed by the operating system. In App Direct mode, Optane PMem DIMMs appear as independent, non-volatile storage devices. This allows Optane PMem to be used as a byte-addressable persistent memory that is mapped into the system physical address space and directly accessible by applications [].
+% Intel Optane DC Persistent Memory Module (PMM) represents a pioneering commercial implementation of persistent memory technology. Illustrated in Figure \ref{fig:optane_architecture}, the architecture of Optane DIMM on Intel platforms reveals its integration onto the memory bus, connecting directly to the processor's integrated memory controller (iMC). Employing the DDR-T protocol at a cache line access granularity of 64B, the iMC facilitates communication with the Optane DIMM. Initial memory access to NVDIMM is coordinated by the Apache Pass Controller, which manages access to the Optane Media. Analogous to SSDs, Optane DIMM conducts address translation for wear-leveling and bad block management, facilitated by the maintenance of an address indirection table (AIT). Following translation, access to the storage media occurs. Notably, with 3D-XPoint access granularity at 256B, the controller converts 64-byte accesses into 256-byte accesses, inducing write amplification. To mitigate this, the Controller incorporates a 16KB write-combining buffer to merge adjacent writes.
+
+Intel Optane DC Persistent Memory Module (PMM) represents a pioneering commercial implementation of persistent memory technology. Illustrated in Figure X, the architecture of Optane DIMM on Intel platforms reveals its integration onto the memory bus, connecting directly to the processor's integrated memory controller (iMC). Employing the DDR-T protocol at a cache-line access granularity of 64B, the iMC facilitates communication with the Optane DIMM. Initial memory access to NVDIMM is coordinated by the on-DIMM Controller, which manages access to the Optane Media. Analogous to SSDs, Optane DIMM conducts address translation for wear-leveling and bad block management, facilitated by the maintenance of an address indirection table (AIT). Following translation, access to the storage media occurs. Notably, with 3D-XPoint access granularity at 256B, the controller converts 64-byte accesses into 256-byte accesses, inducing write amplification. To mitigate this, the Controller incorporates a 16KB write-combining buffer to merge adjacent writes \cite{yang2020empirical,izraelevitz2019basic,wu2020ribbon}.
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[scale=0.5]{optane_architecture.png}
+%     \caption{Architecture of Optane DIMM on Intel platforms}
+%     \label{fig:optane_architecture}
+% \end{figure}
+
+For data persistence assurance, the iMC resides within Intel's asynchronous DRAM refresh (ADR) domain, guaranteeing the survival of CPU stores reaching the ADR domain during power failures. The iMC manages read and write pending queues for each Optane DIMM, with the ADR domain encompassing the write pending queue. Upon data reaching the write pending queue, ADR ensures its persistence in Optane PMM on power failures \cite{yang2020empirical,izraelevitz2019basic,rudoff2017persistent}.
+
+At its introduction, Optane PMM offers capacities up to 512GiB and is exclusively supported by Intel Cascade Lake Platforms. Each processor on this platform features two iMCs, with each iMC supporting three controllers. Additionally, Optane DIMMs are seamlessly integrated with DRAM DIMMs, enabling users to deploy up to one Intel Optane DIMM per channel and up to six DIMMs per CPU socket. This configuration allows for extensive memory capacities, potentially reaching up to 3TiB per socket \cite{yang2020empirical,izraelevitz2019basic}.
+
+\subsection{Performance Characterization}
+Here goes evaluation
+
+\subsection{Operating Modes and Applications}
+
+Intel Optane PMem offers two distinct operating modes: Memory mode and App Direct mode.
+
+In Memory mode, Optane PMem serves as a high-capacity main memory without persistence. In this configuration, DRAM is concealed from users and acts solely as a cache for Optane PMem, seamlessly managed by the operating system \cite{yang2020empirical}.
+
+Conversely, in App Direct mode, Optane PMem DIMMs are directly exposed to the CPU and operating system as independent persistent memory devices. This mode allows Optane PMem to function as byte-addressable persistent memory, seamlessly mapped into the system's physical address space and readily accessible by applications. Allocation and access to persistent data in App Direct mode are typically managed by a file system or other dedicated management layer \cite{yang2020empirical,WhyIsthe9:online}.
+
+\subsection{Programming}
+PMDK and cache flush
 
 % \section{Persistent Memory Development Kit}
 % The Persistent Memory Development Kit (PMDK) is a collection of open-source libraries and tools that simplify managing and accessing persistent memory devices. Tuned for both Linux and Windows operating systems, these libraries build on the dax feature described on the SNIA NVM programming specification. The diagram on figure 5 describes the collection of libraries provided by PMDK. Although PMDK’s core libraries provide C APIs, higher level libraries such as pmemkv provide support for other programming systems.
@@ -47,7 +78,10 @@ Function-as-a-service (FaaS) is the core compute engine for serverless computing
 
 \section{Reinforcement Learning}
 
-Reinforcement Learning (RL) is a subfield of machine learning concerned with learning optimal decision-making policies through interactions with an environment \cite{sutton2018reinforcement}. The fundamental concept underlying RL is the notion of an agent, which takes actions in an environment and receives feedback in the form of rewards, indicating the quality of its decisions. The agent's objective is to learn a policy that maximizes cumulative rewards over time. Moreover, the agent is not provided with explicit instructions on which actions to take; instead, it must discover the actions that lead to the highest rewards by trying them.
+Reinforcement Learning (RL) is a subfield of machine learning concerned with learning optimal decision-making policies through interactions with an environment \cite{sutton2018reinforcement}. 
+
+\subsection{Overview of Reinforcement Learning}
+The fundamental concept underlying RL is the notion of an agent, which takes actions in an environment and receives feedback in the form of rewards, indicating the quality of its decisions. The agent's objective is to learn a policy that maximizes cumulative rewards over time. Moreover, the agent is not provided with explicit instructions on which actions to take; instead, it must discover the actions that lead to the highest rewards by trying them.
 
 \begin{figure}[ht]
     \centering
@@ -61,7 +95,7 @@ Figure \ref{fig:sutton_rl_workflow} presents a schematic representation of a sta
 The agent's behavior is governed by its policy, which maps perceived states to actions. The ultimate aim is to learn an optimal or near-optimal policy that maximizes the cumulative reward. 
 
 
-\subsubsection*{Q-Learning}
+\subsection{Q-Learning}
 
 One of the foundational algorithms in RL is Q-Learning, introduced by Watkins in 1989 \cite{watkins1989learning}. The algorithm belongs to the class of model-free RL algorithms, meaning it learns directly from experience without requiring a model of the environment dynamics \cite{russel2020ai}.
 
@@ -83,7 +117,7 @@ Here, $\alpha$ is the learning rate, determining the extent to which new informa
 
 % The Q-Learning algorithm (illustrated in Figure \ref{algo:q_learning}) involves iterative updates to the Q-function. At each step, the agent selects an action, observes the reward and new state, and then applies one-step Q-learning. The update is governed by the Q-learning formula, where the learning rate ($\alpha$) determines the extent to which new information overrides old data. This learned Q-function approximates the optimal Q-function, irrespective of the policy being followed.
 
-\subsubsection{Linear Regression Models in Reinforcement Learning}
+\subsection{Linear Regression Models in Reinforcement Learning}
 
 One of the key advantages of Q-Learning is its simplicity and ease of implementation. It requires only a table to store the Q-values, making it computationally efficient for small state and action spaces. However, Q-Learning faces challenges in environments with large state spaces, as maintaining a lookup table becomes infeasible due to memory and computational constraints.
 
@@ -93,7 +127,7 @@ In the context of RL, linear regression models are commonly used for function ap
 
 Hyperparameter tuning is a critical aspect of training linear regression models in RL \cite{bergstra2012random}. Hyperparameters, such as the learning rate, regularization strength, and feature scaling, significantly impact the performance and convergence of the models. A systematic approach to hyperparameter tuning involves experimenting with different combinations of hyperparameters, evaluating the performance of the trained models on a validation set, and selecting the optimal hyperparameters based on predefined criteria, such as validation error or performance metrics \cite{russel2020ai}.
 
-\subsubsection{Exploration-Exploitation Tradeoff}
+\subsection{Exploration-Exploitation Tradeoff}
 
 The exploration-exploitation tradeoff poses a significant challenge in reinforcement learning \cite{sutton2018reinforcement}. The agent must strike a balance between exploring unfamiliar actions to gather information and exploiting known actions for immediate rewards. Finding this balance is crucial for effective learning and task performance, as the agent gradually favors actions with higher expected rewards.
 
@@ -101,7 +135,7 @@ One classic strategy for balancing exploration and exploitation is the epsilon-g
 
 Decayed e-greedy methods aim to strike a balance between exploration and exploitation by gradually reducing the exploration rate $\epsilon$ as the agent gains more experience or as the training progresses \cite{sutton2018reinforcement}. This decay encourages the agent to explore the environment more extensively in the early stages of learning while gradually shifting towards exploitation as it becomes more knowledgeable.
 
-\subsubsection{Reward shaping}
+\subsection{Reward shaping}
 
 Reward shaping is a technique in reinforcement learning (RL) aimed at accelerating learning by modifying the reward signal provided to the agent. Traditional RL algorithms rely solely on sparse reward signals, which can make learning slow and inefficient, especially in complex environments. Reward shaping addresses this issue by providing additional, shaped rewards that guide the agent towards desirable behaviors. These shaped rewards are designed to provide more informative feedback to the agent, encouraging it to explore the state-action space more effectively. However, reward shaping must be carefully designed to avoid unintended consequences such as overfitting to the shaped rewards or incentivizing undesirable behaviors \cite{russel2020ai}.
 
