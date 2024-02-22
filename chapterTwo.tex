@@ -41,34 +41,37 @@ Like DRAM, persistent memory is available in the form of Dual In-line Memory Mod
 
 % Intel Optane DC Persistent Memory Module (PMM) represents a pioneering commercial implementation of persistent memory technology. Illustrated in Figure \ref{fig:optane_architecture}, the architecture of Optane DIMM on Intel platforms reveals its integration onto the memory bus, connecting directly to the processor's integrated memory controller (iMC). Employing the DDR-T protocol at a cache line access granularity of 64B, the iMC facilitates communication with the Optane DIMM. Initial memory access to NVDIMM is coordinated by the Apache Pass Controller, which manages access to the Optane Media. Analogous to SSDs, Optane DIMM conducts address translation for wear-leveling and bad block management, facilitated by the maintenance of an address indirection table (AIT). Following translation, access to the storage media occurs. Notably, with 3D-XPoint access granularity at 256B, the controller converts 64-byte accesses into 256-byte accesses, inducing write amplification. To mitigate this, the Controller incorporates a 16KB write-combining buffer to merge adjacent writes.
 
-Intel Optane DC Persistent Memory Module (PMM) represents a pioneering commercial implementation of persistent memory technology. Illustrated in Figure X, the architecture of Optane DIMM on Intel platforms reveals its integration onto the memory bus, connecting directly to the processor's integrated memory controller (iMC). Employing the DDR-T protocol at a cache-line access granularity of 64B, the iMC facilitates communication with the Optane DIMM. Initial memory access to NVDIMM is coordinated by the on-DIMM Controller, which manages access to the Optane Media. Analogous to SSDs, Optane DIMM conducts address translation for wear-leveling and bad block management, facilitated by the maintenance of an address indirection table (AIT). Following translation, access to the storage media occurs. Notably, with 3D-XPoint access granularity at 256B, the controller converts 64-byte accesses into 256-byte accesses, inducing write amplification. To mitigate this, the Controller incorporates a 16KB write-combining buffer to merge adjacent writes \cite{yang2020empirical,izraelevitz2019basic,wu2020ribbon}.
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[scale=0.5]{optane_architecture.png}
-%     \caption{Architecture of Optane DIMM on Intel platforms}
-%     \label{fig:optane_architecture}
-% \end{figure}
+Intel Optane DC Persistent Memory Module (Optane PMM) stands at the forefront of commercial implementations of persistent memory technology, leveraging Intel's innovative 3D-XPoint technology. Upon its introduction, the Optane PMM offers substantial capacities up to 512GiB and is exclusively supported by Intel Cascade Lake platform. Each processor within this platform is equipped with two integrated memory controllers (iMCs), with each iMC supporting three channels. This architecture seamlessly integrates Optane PMM with DRAM, allowing users to deploy up to one Optane PMM per channel and up to six per CPU socket, thereby enabling extensive memory capacities of potentially up to 3TiB per socket \cite{yang2020empirical,izraelevitz2019basic}.
 
-For data persistence assurance, the iMC resides within Intel's asynchronous DRAM refresh (ADR) domain, guaranteeing the survival of CPU stores reaching the ADR domain during power failures. The iMC manages read and write pending queues for each Optane DIMM, with the ADR domain encompassing the write pending queue. Upon data reaching the write pending queue, ADR ensures its persistence in Optane PMM on power failures \cite{yang2020empirical,izraelevitz2019basic,rudoff2017persistent}.
+Similar to conventional DRAM DIMMs, Optane PMMs are positioned on the memory bus and connect directly to the processor's iMC. The communication protocol between the iMC and the Optane PMM is depicted in Figure \ref{fig:optane_communication}.  Communication between the iMC and the Optane PMM occurs via the DDR-T protocol, adapted for persistent memory and operating at cache line granularity (64B). Initial memory access to the Optane PMM is coordinated by the onboard Controller, which manages access to the 3D-XPoint media. Analogous to SSDs, the Optane PMM conducts address translation for wear-leveling and bad block management, facilitated by the maintenance of an address indirection table (AIT). Following translation, access to the storage media occurs. Notably, with 3D-XPoint access granularity set at 256B, the controller converts 64-byte accesses into 256-byte accesses, inducing write amplification. To mitigate this, the Controller incorporates a 16KB write-combining buffer to merge adjacent writes \cite{yang2020empirical,izraelevitz2019basic,wu2020ribbon}.
 
-At its introduction, Optane PMM offers capacities up to 512GiB and is exclusively supported by Intel Cascade Lake Platforms. Each processor on this platform features two iMCs, with each iMC supporting three controllers. Additionally, Optane DIMMs are seamlessly integrated with DRAM DIMMs, enabling users to deploy up to one Intel Optane DIMM per channel and up to six DIMMs per CPU socket. This configuration allows for extensive memory capacities, potentially reaching up to 3TiB per socket \cite{yang2020empirical,izraelevitz2019basic}.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.5]{images/pmem_storage_pyramid.jpg}
+    \caption{Communication between iMC and OPtane PMM}
+    \label{fig:optane_communication}
+\end{figure}
+
+To ensure data persistence, Intel platforms integrate the iMC and Optane PMM within the asynchronous DRAM refresh (ADR) domain. Intel's ADR feature ensures that CPU stores that reach the ADR domain will survive a power failures \cite{yang2020empirical}. The iMC manages read and write pending queues for each Optane PMM, with the ADR domain encompassing the write pending queue. Once data reaches the write pending queue, ADR ensures its persistence within Optane PMM in the event of power failures. The ADR domain excludes the CPU caches, necessitating additional steps beyond simply executing a store instruction to ensure data persistence. To achieve this, CPU stores must be continually flushed using specialized instructions provided by Intel's Instruction Set Architecture (ISA), including \textrm{CLFLUSH}, \textrm{CLFLUSHOPT}, and \textrm{CLWB} \cite{yang2020empirical,izraelevitz2019basic,rudoff2017persistent}.
 
 \subsection{Performance Characterization}
 Here goes evaluation
 
 \subsection{Operating Modes and Applications}
 
-Intel Optane PMem offers two distinct operating modes: Memory mode and App Direct mode.
+Intel Optane DC PMM offers two distinct operating modes: Memory mode and App Direct mode.
 
 In Memory mode, Optane PMem serves as a high-capacity main memory without persistence. In this configuration, DRAM is concealed from users and acts solely as a cache for Optane PMem, seamlessly managed by the operating system \cite{yang2020empirical}.
 
 Conversely, in App Direct mode, Optane PMem DIMMs are directly exposed to the CPU and operating system as independent persistent memory devices. This mode allows Optane PMem to function as byte-addressable persistent memory, seamlessly mapped into the system's physical address space and readily accessible by applications. Allocation and access to persistent data in App Direct mode are typically managed by a file system or other dedicated management layer \cite{yang2020empirical,WhyIsthe9:online}.
 
-\subsection{Programming}
-PMDK and cache flush
+\subsection{Programming Persistent Memory}
 
-% \section{Persistent Memory Development Kit}
-% The Persistent Memory Development Kit (PMDK) is a collection of open-source libraries and tools that simplify managing and accessing persistent memory devices. Tuned for both Linux and Windows operating systems, these libraries build on the dax feature described on the SNIA NVM programming specification. The diagram on figure 5 describes the collection of libraries provided by PMDK. Although PMDK’s core libraries provide C APIs, higher level libraries such as pmemkv provide support for other programming systems.
+In the realm of persistent memory technology, maintaining data consistency across runtime and system reboots is essential. To address this challenge, prior research underscores the necessity for applications leveraging persistent memory to implement transactions that are atomic, consistent, thread-safe, and resilient to system failures—a paradigm akin to ACID transactions in database systems. However, achieving such robustness in real-world scenarios poses significant complexity. Recognizing this, Intel has developed the Persistent Memory Development Kit (PMDK) to tackle this challenge \cite{scargall2020pmem,rudoff2017persistent}.
+
+PMDK comprises a comprehensive suite of libraries and tools tailored for both application developers and system administrators, aiming to streamline the management and utilization of persistent memory devices. Drawing on the SNIA NVM Programming model \cite{NVMProgr73:online} as its foundation, these libraries extend its capabilities to varying extents. Some libraries offer simplified wrappers around operating system primitives, facilitating ease of use, while others provide sophisticated data structures optimized for persistent memory usage \cite{scargall2020pmem}.
+
+In the scope of this thesis, we leverage pmemkv \cite{GitHubpm66:online}, a persistent local key-value store provided by PMDK. Designed with cloud environments in mind, pmemkv complements PMDK's suite of libraries with cloud-native support, abstracting the intricacies of programming with persistent memory through a familiar key-value API. Notably, pmemkv distinguishes itself from traditional key-value databases by enabling direct access to data. This means that reading data from persistent memory circumvents the need for copying it into DRAM—an approach that significantly enhances the performance of applications leveraging persistent memory \cite{scargall2020pmem}.
 
 \section{Serverless Computing}
 
