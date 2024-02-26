@@ -1,1 +1,51 @@
 \chapter[Evaluation]{Evaluation}
+
+In this chapter, the NVM Middleware and the Q-Learning Model.
+
+\section{Experimental Setup}
+
+\subsection{Platform}
+
+\begin{table}[ht]
+    \centering
+    \caption{Experimental Platform Specifications}
+    \label{table:platform_specifications}
+    \begin{tabular}{|l|l|}
+      \hline
+      Processor & Intel\,\textsuperscript{\tiny\textregistered} Xeon\,\textsuperscript{\tiny\textregistered} Gold 6252   \\\hline
+      Sockets & 2 \\\hline
+      Cores per socket & 24  \\\hline
+      Threads per core & 2 \\\hline
+      Numa nodes & 2 \\\hline
+      CPU Frequency & 2.7 GHz (3.7 GHz Turbo frequency) \\\hline
+      L1d cache & 1.5 MiB  \\\hline
+      L1i cache & 1.5 MiB  \\\hline
+      L2 Cache & 48 MiB  \\\hline
+      L3 Cache & 71.5 MiB  \\\hline
+      DRAM & 16 GB DDR4 DIMM x 6 per socket  \\\hline
+      Persistent Memory & 128 GB Optane PMM x 6 per socket  \\\hline
+      Operating System & Ubuntu 20.04.4 LTS (Focal Fossa)  \\\hline
+      \hline
+    \end{tabular}
+\end{table}
+
+The experimental platform utilized in this study is detailed in Table \ref{table:platform_specifications}. It features an Intel,\textsuperscript{\tiny\textregistered} Xeon,\textsuperscript{\tiny\textregistered} Gold 6252 processor with 2 sockets, each hosting 24 cores and 2 threads per core, totaling 2 NUMA nodes. Each socket is equipped with three memory channels, housing 16 GB DDR4 DIMMs and 128 GB Optane PMMs. In aggregate, the system comprises 192 GB of DRAM and 1.5 TB of Optane persistent memory. To mitigate the NUMA effect, one socket is designated for running the NVM Middleware threads, while the other handles the interactive and batch applications, as described in Section 3.4.3.
+
+\subsection{Optane DC PMem Configuration}
+As outlined earlier, this thesis concentrates on exploring the persistent capabilities of Optane DC PMem. Consequently, Optane DC PMem is employed in the App Direct Mode throughout our experiments. To facilitate the utilization of persistent memory, we expose it via an xfs filesystem configured in dax mode, thereby bypassing the page cache. Additionally, we enhance memory management and performance by configuring the persistent memory with huge pages (2MiB) \cite{Speeding28:online}. Lastly, we deploy a PMEMKV database with a capacity of 600GB, configured with its persistent concurrent engine.
+
+\subsection{FaaS Workload Traces}
+
+\subsubsection{Interactive Traces}
+We collect the traces from \cite{GitHubAz35:online}.
+
+\subsubsection{Batch Traces}
+We collect the traces from \cite{carver2020wukong}.
+
+% \section*{Controlling Concurrency}
+
+% \section*{Workloads}
+
+% \section*{Q-Learning}
+
+% \section*{Pre-Training Linear Regression Models}
