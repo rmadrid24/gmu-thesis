@@ -21,20 +21,13 @@
 % The first argument in [ ] is the title as displayed in the table of contents
 % The second argument is the title as displayed here.  Use \\ as appropriate in
 %   this title to get desired line breaks
-\appchapter[An Appendix]{An Appendix}
+\appchapter[Concurrency Control Results]{Concurrency Control Results}
+\label{appendix:b}
 
-This is an appendix.  Here is a numbered appendix equation:
-\begin{equation}
-    a^2 + b^2 = c^2.
-\end{equation}
-
-\newpage
-appendix page 2
-\begin{equation}
-	a^2 + b^2 = c^2.
-\end{equation}
-\pagebreak
-\section{section}
-\subsection{subsection}
-\subsubsection{subsubsection}
-
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/middleware-latency.png}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/middleware-tp.png}
+    \caption{Middleware Evaluation}
+    \label{fig:middleware_eval}
+  \end{figure}

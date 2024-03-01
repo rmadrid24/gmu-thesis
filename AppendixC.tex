@@ -1,0 +1,13 @@
+\appchapter[Phases]{Phases}
+\label{appendix:c}
+
+We use the following workloads to train and test the RL agent:
+
+Phase 1. We change the interactive traces to use a data access size of 50B, a read-to-write ratio of 80-20, and 200 concurrent client threads. We change the batch traces to use a data access size of 8k, read-to-write ratio of 50-50, and 200 concurrent client threads. 
+
+Phase 2. We change the interactive traces to use a data access size of 50B, a read-to-write ratio of 80-20, and 150 concurrent client threads. We change the batch traces to use a data access size of 8k, read-to-write ratio of 50-50, and 320 concurrent client threads.  
+
+Phase 3. We change the interactive traces to use a data access size of 50B, a read-to-write ratio of 80-20, and 400 concurrent client threads. We change the batch traces to use a data access size of 4k, pure read, and 200 concurrent client threads.  
+
+Phase 4. We change the interactive traces to use a data access size of 500B, a read-to-write ratio of 10-90, and 200 concurrent client threads. We change the batch traces to use a data access size of 4k, pure read, and 200 concurrent client threads. 
+

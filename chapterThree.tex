@@ -187,43 +187,6 @@ where $s_t \in S$ represents the state space. The tuple encapsulates the key fea
 
 \subsubsection{Reward}
 
-\begin{algorithm}[ht]
-  % \small
-  \caption{Reward Calculation Algorithm}
-  \label{algo:reward_calculation}
-  \SetAlgoLined
-  \KwIn{System statistics: $\text{stat}$}
-  \KwOut{Reward value: $\text{reward}$}
-  \tcc{Initialize variables}
-  $\text{max\_scale\_lat} \leftarrow 1000$, $\text{max\_scale\_tp} \leftarrow 10$, $\text{min\_scale} \leftarrow 1$, $\text{lat\_goal} \leftarrow 200$, $\text{tp\_goal} \leftarrow 250000$, $\text{lat\_penalty} \leftarrow 500.0$, $\text{tp\_penalty} \leftarrow 5000.0$\;
-    
-  \tcc{Scale observed and target latency and throughput}
-  $\text{lat} \leftarrow ((\text{max\_scale\_lat} - \text{min\_scale}) \times (\text{stat.tailLatency} - \text{min\_value}) / (\text{max\_latency} - \text{min\_value})) + \text{min\_scale}$\;
-  $\text{tp} \leftarrow ((\text{max\_scale\_tp} - \text{min\_scale}) \times (\text{stat.throughput} - \text{min\_value}) / (\text{max\_throughput} - \text{min\_value})) + \text{min\_scale}$\;
-  $\text{lat\_goal} \leftarrow ((\text{max\_scale\_lat} - \text{min\_scale}) \times (\text{lat\_goal} - \text{min\_value}) / (\text{max\_latency} - \text{min\_value})) + \text{min\_scale}$\;
-  $\text{tp\_goal} \leftarrow ((\text{max\_scale\_tp} - \text{min\_scale}) \times (\text{tp\_goal} - \text{min\_value}) / (\text{max\_throughput} - \text{min\_value})) + \text{min\_scale}$\;
-    
-  \tcc{Calculate errors}
-  $\text{error\_lat} \leftarrow |\text{lat} - \text{lat\_goal}|$\;
-  $\text{error\_tp} \leftarrow |\text{tp} - \text{tp\_goal}|$\;
-    
-  \tcc{Calculate reward}
-  \eIf{$\text{lat} \leq \text{lat\_goal}$ \textbf{and} $\text{tp} \geq \text{tp\_goal}$}{
-      $\text{reward} \leftarrow 10 \times (\text{error\_lat} + \text{error\_tp}$) \tcp*{High reward for meeting both latency and throughput goals}
-  }{
-      \eIf{$\text{lat} > \text{lat\_goal}$ \textbf{and} $\text{tp} < \text{tp\_goal}$}{
-          $\text{reward} \leftarrow -1 \times (\text{lat\_penalty} \times \text{error\_lat} + \text{tp\_penalty} \times \text{error\_tp})$ \tcp*{Penalize for high latency and low throughput}
-      }{
-          \eIf{$\text{lat} > \text{lat\_goal}$}{
-              $\text{reward} \leftarrow -1 \times \text{lat\_penalty} \times \text{error\_lat}$ \tcp*{Penalize for high latency}
-          }{
-              $\text{reward} \leftarrow -1 \times \text{tp\_penalty} \times \text{error\_tp}$ \tcp*{Penalize for low throughput}
-          }
-      }
-  }
-
-\end{algorithm}
-
 To guide the optimization process of the reinforcement learning agent, we establish an algorithm (Algorithm \ref{algo:reward_calculation}) to calculate a reward value based on observed and target latency and throughput metrics. This algorithm, outlined below, serves as a crucial component in training the RL agent to make informed decisions.
 
 \begin{enumerate}
@@ -272,47 +235,6 @@ Additionally, we preprocess the features by standardizing them using the standar
 
 
 \subsubsection{Proposed Q-Learning Algorithm}
-
-\begin{algorithm}[ht]
-  % \small
-  \caption{Q-Learning Algorithm}
-  \label{algo:q_learning_mw}
-  \SetAlgoLined
-  \KwIn{Pre-trained Q-value models $M_a$ for all actions $a$}
-  \KwOut{Learned Q-value models $M_a$ for all actions $a$}
-  Initialize the training parameters $\alpha$, $\gamma$, $\epsilon$\;
-  \For{$episode \leftarrow 1$ \KwTo $E$}{
-    Reset the environment\;
-    \Repeat{episode is done}{
-      Observe the state $s_t$\;
-      \tcp{Choose action $a_t$ using the $\epsilon$-greedy policy}
-      Generate random number $r$ from uniform distribution in [0, 1]\;
-      \If{$r < \epsilon$}{
-        Select a random action $a_t$ from the action space \;
-      }
-      \Else{
-        \For{each action $a$}{
-            Predict Q-value $Q_a(s_t)$ using model $M_a$: $Q_a(s_t) \leftarrow M_a.predict(s_t)$ \;
-        }
-        Select action $a_t \leftarrow \argmax_a Q_a(s_t)$ \;
-      }
-      Take action $a_t$, observe reward $r$ and next state $s_{t+1}$\;
-      \tcp{Update the Q-value model using reward and next state}
-      \If{not done}{
-        \For{each action $a$}{
-          Predict Q-value $Q_a(s_{t+1})$ using model $M_a$: $Q_a(s_{t+1}) \leftarrow M_a.predict(s_{t+1})$ \;
-        }
-        Calculate target Q-value: $target \leftarrow r + \gamma \cdot \max_a Q_a(s_{t+1})$ \;
-      }
-      \Else{
-        Set target Q-value to the reward: $target \leftarrow r$ \;
-      }
-      Update the model for action $a_t$ with the target Q-value: $M_{a_t}.partial\_fit(s_t, target)$ \;
-      Update state: $s_t \leftarrow s_{t+1}$\;
-    }
-    Decrease $\epsilon$ according to exploration schedule\;
-  }
-\end{algorithm}
 
 Algorithm \ref{algo:q_learning_mw} outlines the Q-Learning process for training an agent to make optimal decisions in an environment. It takes the bootstrapped Q-value models $M_a$ for all actions $a$ and outputs the new learned models after training.
 
