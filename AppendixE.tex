@@ -1,0 +1,72 @@
+\appchapter[RL Agent Evaluation]{RL Agent Evaluation}
+\label{appendix:e}
+
+\begin{table}[ht]
+    \centering
+    \caption{Evaluation Results - Latency}
+    \label{table:eval_results_latency}
+    % Tabular environment goes AFTER the caption!
+    % \begin{adjustbox}{width=1\textwidth}
+    \begin{tabular}{|c|c|c|c|}
+      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+      \hline
+      \thead{} & \thead{No NVM Middleware} & \thead{NVM Middleware Fixed} & \thead{NVM Middleware + RL} \\
+      \hline
+      Min & 19 & 89 & 130.95 \\\hline
+      Q1 & 81 & 239 & 396.75 \\\hline
+      Median & 19 & 674.5 & 754 \\\hline
+      Q3 & 271.5 & 1888.75 & 1427 \\\hline
+      Max & 82824 & 34090.93 & 34712.04 \\
+      \hline
+    \end{tabular}
+  % \end{adjustbox}
+  \end{table}
+
+  \begin{table}[ht]
+    \centering
+    \caption{Evaluation Results - Throughput}
+    \label{table:eval_results_tp}
+    % Tabular environment goes AFTER the caption!
+    % \begin{adjustbox}{width=1\textwidth}
+    \begin{tabular}{|c|c|c|c|}
+      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+      \hline
+      \thead{} & \thead{No NVM Middleware} & \thead{NVM Middleware Fixed} & \thead{NVM Middleware + RL} \\
+      \hline
+      Min & 72,218.9 & 104,719.9 & 159,168.8 \\\hline
+      Q1 & 112,440 & 148,792.5 & 218,816.25 \\\hline
+      Median & 135,508.5 & 186,877 & 252,078.5 \\\hline
+      Q3 & 166,340.25 & 231,597.75 & 278,205 \\\hline
+      Max & 242,104.4 & 357,445.6 & 352,800.27 \\
+      \hline
+    \end{tabular}
+  % \end{adjustbox}
+  \end{table}
+
+  \begin{table}[ht]
+    \centering
+    \caption{Evaluation Results - Reward}
+    \label{table:eval_results_reward}
+    % Tabular environment goes AFTER the caption!
+    % \begin{adjustbox}{width=1\textwidth}
+    \begin{tabular}{|c|c|c|c|}
+      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+      \hline
+      \thead{} & \thead{No NVM Middleware} & \thead{NVM Middleware Fixed} & \thead{NVM Middleware + RL} \\
+      \hline
+      Min & -94755.386 & -65157.089 & -87907.434 \\\hline
+      Q1 & -10790.1 & -8605.4625 & -3647.9454 \\\hline
+      Median & -6983.235 & -3208.995 & -4.005294 \\\hline
+      Q3 & -4042.9125 & -2.353015 & 0.31523 \\\hline
+      Max & 3.174046 & 4.89667 & 4.582787 \\
+      \hline
+    \end{tabular}
+  % \end{adjustbox}
+  \end{table}
+
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl-long-run.png}
+    \caption{Long Run Evaluation}
+    \label{fig:long_run_eval}
+  \end{figure}

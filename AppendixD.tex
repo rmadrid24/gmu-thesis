@@ -1,5 +1,17 @@
-\appchapter[Reinforcement Learning Parameters]{Reinforcement Learning Parameters}
+\appchapter[RL Agent Training]{RL Agent Training}
 \label{appendix:d}
+
+% Phase 1
+% We observe that the RL agent converges to 10 interactive threads and 10 batch threads. The results are showing in figure X.
+
+% Phase 2
+% We observe that the RL agent converges to 10 interactive threads and 10 batch threads. The results are showing in figure X.
+
+% Phase 3
+% We observe that the RL agent converges to 10 interactive threads and 10 batch threads. The results are showing in figure X.
+
+% Phase 4
+% We observe that the RL agent converges to 10 interactive threads and 10 batch threads. The results are showing in figure X.
 
 \begin{table}[ht]
     \centering
@@ -7,7 +19,7 @@
     \label{table:hyperparameter_tuning}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
-    \begin{tabular}{|l|l|l|}
+    \begin{tabular}{|c|c|c|}
       % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
       \hline
       \thead{Type} & \thead{Parameter} & \thead{Values} \\
@@ -29,7 +41,7 @@
     \label{table:per_model_parameters}
     % Tabular environment goes AFTER the caption!
     \begin{adjustbox}{width=1\textwidth}
-    \begin{tabular}{|l|l|l|}
+    \begin{tabular}{|c|c|c|}
       % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
       \hline
       \thead{Model} & \thead{Action} & \thead{Parameters} \\
@@ -54,12 +66,12 @@
     \label{table:rl_training_parameters}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
-    \begin{tabular}{|l|l|}
+    \begin{tabular}{|c|c|}
       % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
       \hline
       \thead{Parameter} & \thead{Value} \\
       \hline
-      episodes & Phases 1\-2: 700, Phases 3\-4: 1,000 \\\hline
+      episodes & Phases $1-2$: 700, Phases $3-4$: 1,000 \\\hline
       Per-episode steps & 200 \\\hline
       gamma & 0.95 \\\hline
       learning rate & 0.7 \\\hline
@@ -69,3 +81,115 @@
     \end{tabular}
   % \end{adjustbox}
   \end{table}
+
+  \begin{table}[ht]
+    \centering
+    \caption{Preliminary Rewards Phase 0}
+    \label{table:rewards_phase_0}
+    % Tabular environment goes AFTER the caption!
+    % \begin{adjustbox}{width=1\textwidth}
+    \begin{tabular}{|c|c|c|c|c|c|}
+      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+      \hline
+      \thead{} & \thead{I5/B5} & \thead{I10/B10} & \thead{I15/B15} & \thead{I15/B5} & \thead{I5/B15}\\
+      \hline
+      Min & -5716 & -8312 & -41660 & -5682 & -9436\\\hline
+      Q1 & -1383 & 2.7 & -4797 & -2971 & -1\\\hline
+      Median & -171 & 3.92 & -2 & -1850 & 0\\\hline
+      Q3 & 0 & 4.3 & 3 & -1035 & 1\\\hline
+      Max & 1 & 5 & 5 & 3 & 2\\
+      \hline
+    \end{tabular}
+  % \end{adjustbox}
+  \end{table}
+
+  \begin{table}[ht]
+    \centering
+    \caption{Preliminary Rewards Phase 1}
+    \label{table:rewards_phase_1}
+    % Tabular environment goes AFTER the caption!
+    % \begin{adjustbox}{width=1\textwidth}
+    \begin{tabular}{|c|c|c|c|c|c|}
+      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+      \hline
+      \thead{} & \thead{I5/B5} & \thead{I10/B10} & \thead{I15/B15} & \thead{I15/B5} & \thead{I5/B15}\\
+      \hline
+      Min & -4320 & -7763 & -20455 & -5328 & -10060\\\hline
+      Q1 & -463 & -1.9 & -1169 & -368 & 1\\\hline
+      Median & 1.3 & 5.2 & 4.2 & 3.1 & 3\\\hline
+      Q3 & 1.8 & 5.8 & 4.9 & 3.3 & 4\\\hline
+      Max & 2.8 & 6 & 6 & 3.8 & 6\\
+      \hline
+    \end{tabular}
+  % \end{adjustbox}
+  \end{table}
+
+  \begin{table}[ht]
+    \centering
+    \caption{Preliminary Rewards Phase 2}
+    \label{table:rewards_phase_2}
+    % Tabular environment goes AFTER the caption!
+    % \begin{adjustbox}{width=1\textwidth}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+      \hline
+      \thead{} & \thead{I5/B5} & \thead{I7/B3} & \thead{I7/B7} & \thead{I10/B10} & \thead{I15/B15} & \thead{I15/B5} & \thead{I5/B15}\\
+      \hline
+      Min & -12490 & -6582 & -174852 & -141354 & -149647 & -96900 & -13211\\\hline
+      Q1 & -1230 & -1727 & -2567 & -18768 & -42951 & -58414 & -8583\\\hline
+      Median & -272 & -672 & -4 & -566 & -14008 & -2954 & -4940\\\hline
+      Q3 & -5 & -3 & -2 & -1 & -4607 & 0 & -2709\\\hline
+      Max & -3 & -1 & 0 & 3 & -1 & 4 & -943\\
+      \hline
+    \end{tabular}
+  % \end{adjustbox}
+  \end{table}
+
+  \begin{table}[ht]
+    \centering
+    \caption{Preliminary Rewards Phase 3}
+    \label{table:rewards_phase_3}
+    % Tabular environment goes AFTER the caption!
+    % \begin{adjustbox}{width=1\textwidth}
+    \begin{tabular}{|c|c|c|c|c|}
+      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+      \hline
+      \thead{} & \thead{I5/B5} & \thead{I10/B10} & \thead{I15/B15} & \thead{I15/B5}\\
+      \hline
+      Min & -11341 & -14699 & -21259 & -3912\\\hline
+      Q1 & -153 & -2.5 & -6908 & -1\\\hline
+      Median & -2 & 2.3 & -3117 & 3\\\hline
+      Q3 & 0 & 3.7 & -4 & 4\\\hline
+      Max & 3 & 5 & 3 & 5\\
+      \hline
+    \end{tabular}
+  % \end{adjustbox}
+  \end{table}
+
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl-phase-0.png}
+    \caption{Learned Pattern Phase 0}
+    \label{fig:learned_phase_0}
+  \end{figure}
+
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl-phase-1.png}
+    \caption{Learned Pattern Phase 1}
+    \label{fig:learned_phase_1}
+  \end{figure}
+
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl-phase-2.png}
+    \caption{Learned Pattern Phase 2}
+    \label{fig:learned_phase_2}
+  \end{figure}
+
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl-phase-3.png}
+    \caption{Learned Pattern Phase 3}
+    \label{fig:learned_phase_3}
+  \end{figure}

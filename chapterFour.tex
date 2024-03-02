@@ -67,6 +67,18 @@ Using the tuned linear regression models, we proceed to run the Q-learning algor
 
 We now evaluate our trained model in two scenarios, one where we alternate workloads. We compare the agent's performance against a baseline where we fix the combination of threads in the NVM MIddleware to 15 interactive and 15 batch threads.
 
+Phase 1
+We observe that the RL agent converges to 10 interactive threads and 10 batch threads. The results are showing in figure X.
+
+Phase 2
+We observe that the RL agent converges to 10 interactive threads and 10 batch threads. The results are showing in figure X.
+
+Phase 3
+We observe that the RL agent converges to 10 interactive threads and 10 batch threads. The results are showing in figure X.
+
+Phase 4
+We observe that the RL agent converges to 10 interactive threads and 10 batch threads. The results are showing in figure X.
+
 Once the RL agent is trained, we evaluate its performance against a baseline scenario where no learning is done. The experiment consists of a long-running simulation consisting of 400 steps, changing the workloads every 200 steps. In the baseline scenario, we fix the NVM Middleware interactive and batch threads to 15 threads for the whole experiment. In the RL scenario, the agent uses the knowledge obtained from training and adapts the interactive and batch threads as workload changes. We perform two RL experiments, one where we alternate the workloads sequentially and another changing the workloads randomly. For the three tests, we collect the reward on each step using the calculations described in \ref{algo:reward_calculation}.
 
 We run a single simulation consisting of 400 steps, changing the workloads every 200 steps. For both, the baseline and the RL experiments, we capture the rewards using the calculatino defined in Algorithm \ref{algo:reward_calculation}.
