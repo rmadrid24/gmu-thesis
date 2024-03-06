@@ -1,1 +1,11 @@
 \chapter[Related Work]{Related Work}
+
+\section*{Optane DC PMem}
+
+\section*{Serverless Storage}
+
+Previous works have proposed the development of new storage systems to overcome the limiations of existing cloud storage offerings \cite{klimovic2018pocket,wu2019autoscaling,10.14778/3587136.3587139}. These solutions overcome the performance difference between DRAM and storage by combining multuple storage medias, keeping hot data in DRAM and cold data in persistent storage. As a Pocket \cite{klimovic2018pocket} uses application hints to decide in which tier to store the application's data. Anna \cite{} analyzes the frequency in which keys are invoked to move data between tiers. In contrast, this thesis proposes the use of the novel Optane DC PMem, which offers a unique combination of persistent storage with memory-like speeds. 
+
+The systems mentioned above also focus on provisioning resources dynamically to meet the wrokload demands. However, they implement reactive policies, taking when certain thresholds are met. In contrast, the NVM Middleware implements a proactive approach, using Reinforcement Learning to predict workload changes and act in advance. 
+
+\section*{Function Approximation}

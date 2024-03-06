@@ -1,1 +1,41 @@
-\chapter[Conclusions and Future Work]{Conclusions and Future Work}
+% \chapter[Discussions and Future Research]{Discussions and Future Research}
+
+% \section*{Integration with a real-world Serverless Storage Service}
+
+% The initial scope of this thesis included the design of a simple storage server enabling communication with applications through Remote Procedure Calls (RPC). Under the hood, the server was designed to utilize the NVM Middleware to get the best performance out of Intel Optane DC PMem. However, our measurements were impacted by network overhead found in the infrastructure were the server with Optane DC PMem was located. Therefore, we leave for future research the evaluattion of the NVM MIddleware on a real-world serverless storage service. Anna \cite{wu2019anna} presents an interesting option for testing the NVM MIddleware. Anna's design allows to extend it by adding storage tier based on OPtane DC PMem, utilizing the NVM Middleware as the optimization layer for persistent memory.
+
+% \section*{Reducing Autoscaling Overhead}
+
+% Our current approach to scale resources consists of adding or removing up to two threads per one-second window. This approach delays the system's ability to adapt to the optiomal combination of interactive and batch threads. If the current combination of threads is off from the optimal one by a significant amount, the NVM Middleware requires several steps to take the system to the right combination. Furthremore, we believe this approach causes some of the performances spikes observed in the results.
+
+% An interesting approach to explore is to allow the NVM MIddleware to add or remove more than two threads per time step. This could help the NVM MIddleware to adapt to workload changes faster, therefore meeting the SLAs more effcieintly. However, this approach might add more actions in the action space, increasing the complexity of the RL model.
+
+% \section*{Choice of Workloads}
+
+% YCSB is an excellent tool to test a variety of workloads. However, this tool might not capture the real characteristics of serverless workloads running on real-world serverless platforms. As a result, in this thesis, we focus on using I/O traces collected from real-world serverless platforms to evaluate our RL approach. However, given that we needed to create multiple stages with distinct interactive and batch workload combinations to test the autoscaling capabilities of the RL agent, we build exprimental workloads based on real-world serverless traces by modifying certain characteristics such as the block size and the read-to-write ratio.
+
+% We believe the choice of workloads did not allow the RL agent to aciheve the desired latency SLA. One possibility is that the chosen interactive workloads did not stress the system enough, which is why the concurrency control implemented by the NVM Middleware adds extra overhead on the observed latency. A possible research endeavor is to collect more real-world serverless traces to further understand the limitations and capabilities of the NVM Middleware. However, these traces are limited and difficult to get. Furthermore, testing new workloads in our current setup is time consuming, since the RL agent needed to go over the whole learning process, starting from generating the dataset for model selection to running Q-learning episodes for each stage.
+
+% \section*{Evaluation other Function Approximation techniques}
+% %talk about model selection and deep q-learning
+% Feature extraction is a complicated process. In this work, we select a few features relevant to our end goal. However, in order to cover more generic use cases, our RL model might require more features to improve its learning capabilities. The features can take many forms, such as workload characteristics, metrics within the NVM Middleware, metrics within Optane DC PMem, and general server metrics such as CPU and memory usage.
+
+% A poor representation of features can be a limitation for linear function approximators. Another possibility is to go beyond linear function approximators by using deep neural networks to approximate the Q-fucntion. This approach, known as deep reinforcement learning, performs well in scenarios with complex feature represenations. In most cases, this approach is capable of discovering the useful features for itself \cite{russel2020ai}. It has been proven effective in complex scearios, such as playing games. such as playing games has been proven effective in complex scenarios, such as playing games \cite{mnih2013playing,silver2017mastering}. 
+
+\chapter{Discussions and Future Research}
+
+\section*{Storage Service Integration}
+
+Originally, this thesis aimed to design a simple storage server facilitating communication with applications via Remote Procedure Calls (RPC), leveraging the NVM Middleware to optimize Intel Optane DC PMem performance. However, our measurements were affected by network overhead in the infrastructure housing the server with Optane DC PMem. Thus, evaluating the NVM Middleware on a real-world serverless storage service remains a future research endeavor. Anna key-value database \cite{wu2019anna} proposes a promising option for assessing the NVM Middleware by extending it to incorporate a storage tier based on Optane DC PMem, thereby utilizing the NVM Middleware as the optimization layer for persistent memory.
+
+\section*{Reducing Autoscaling Overhead}
+
+Our current approach to scaling resources involves adding or removing up to two threads per one-second window, which may delay the system's adaptation to the optimal combination of interactive and batch threads. This delay could contribute to performance spikes observed in the results. An intriguing avenue for exploration is enabling the NVM Middleware to add or remove more than two threads per time step to expedite adaptation to workload changes, potentially enhancing SLA fulfillment efficiency. However, this approach may introduce additional actions in the action space, increasing the RL model's complexity.
+
+\section*{Choice of Workloads}
+
+While YCSB offers versatility in testing various workloads, its simulations may not accurately reflect real-world serverless workload characteristics. Thus, in this thesis, we rely on I/O traces from actual serverless platforms to evaluate our RL approach. However, crafting experimental workloads based on real-world serverless traces, with modified characteristics such as block size and read-to-write ratio, was necessary to test the RL agent's autoscaling capabilities under shifting workloads. Yet, our chosen workloads may have hindered the RL agent's ability to meet latency SLAs. Obtaining more real-world serverless traces could shed light on the NVM Middleware's limitations and capabilities. However, acquiring such traces is challenging and time-consuming, as the RL agent must undergo the entire learning process for each stage, from dataset generation for model selection to running Q-learning episodes.
+
+\section*{Exploring Other Function Approximation Techniques}
+
+Feature extraction is pivotal but complex. While we select relevant features for our RL model, covering more generic use cases may necessitate additional features to enhance learning capabilities. These features could encompass workload characteristics, NVM Middleware metrics, Optane DC PMem metrics, and general server metrics like CPU and memory usage. Limitations in feature representation may impede linear function approximators' efficacy. Alternatively, employing deep neural networks for function approximation, known as deep reinforcement learning, could address these challenges. Deep reinforcement learning has demonstrated success in complex scenarios by autonomously discovering useful features, as evidenced in gaming environments \cite{mnih2013playing,silver2017mastering}.
