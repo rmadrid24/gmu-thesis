@@ -41,20 +41,21 @@
     \label{table:per_model_parameters}
     % Tabular environment goes AFTER the caption!
     \begin{adjustbox}{width=1\textwidth}
-    \begin{tabular}{|c|c|c|}
+    \begin{tabular}{|l|l|}
       % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
       \hline
-      \thead{Model} & \thead{Action} & \thead{Parameters} \\
+      \thead{Model} & \thead{Parameters} \\
       \hline
-      Model\_1 & 1 & learning\_rate: invscaling, loss: squared\_loss, alpha: 0.001, max\_iter: 10000, penalty: l2 \\\hline
-      Model\_2 & 2 & learning\_rate: invscaling, loss: squared\_loss, alpha: 0.0001, max\_iter: 1000, penalty: l2 \\\hline
-      Model\_3 & 3 & learning\_rate: invscaling, loss: squared\_loss, alpha: 0.001, max\_iter: 1000, penalty: elasticnet \\\hline
-      Model\_4 & 4 & learning\_rate: invscaling, loss: squared\_loss, alpha: 0.0001, max\_iter: 10000, penalty: l1 \\\hline
-      Model\_5 & 5 & learning\_rate: invscaling, loss: squared\_loss, alpha: 0.01, max\_iter: 100, penalty: elasticnet \\\hline
-      Model\_6 & 6 & learning\_rate: invscaling, loss: squared\_loss, alpha:  0.001, max\_iter: 10000, penalty: l2 \\\hline
-      Model\_7 & 7 & learning\_rate: invscaling, loss: squared\_loss, alpha: 0.01, max\_iter: 1000, penalty: elasticnet \\\hline
-      Model\_8 & 8 & learning\_rate: invscaling, loss: squared\_loss, alpha: 0.001, max\_iter: 100, penalty: l1 \\\hline
-      Model\_9 & 9 & learning\_rate: invscaling, loss: squared\_loss, alpha: 0.0001, max\_iter: 100, penalty: elasticnet \\
+      Preprocessor & degree: 2 \\\hline
+      Model\_1 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha: 0.1, max\_iter: 1000, penalty: elasticnet \\\hline
+      Model\_2 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha: 0.01, max\_iter: 10000, penalty: l1 \\\hline
+      Model\_3 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha: 0.0001, max\_iter: 100, penalty: elasticnet \\\hline
+      Model\_4 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha: 0.001, max\_iter: 10000, penalty: l1 \\\hline
+      Model\_5 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha: 0.01, max\_iter: 10000, penalty: elasticnet \\\hline
+      Model\_6 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha:  0.01, max\_iter: 1000, penalty: elasticnet \\\hline
+      Model\_7 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha: 0.01, max\_iter: 1000, penalty: elasticnet \\\hline
+      Model\_8 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha: 0.1, max\_iter: 10000, penalty: l1 \\\hline
+      Model\_9 & learning\_rate: 'invscaling', loss: 'squared\_loss', alpha: 0.01, max\_iter: 100, penalty: elasticnet \\
       \hline
     \end{tabular}
   \end{adjustbox}
@@ -71,7 +72,7 @@
       \hline
       \thead{Parameter} & \thead{Value} \\
       \hline
-      episodes & Phases $1-2$: 700, Phases $3-4$: 1,000 \\\hline
+      episodes & Phases $1,3,4$: 1,000, Phase $2$: 700 \\\hline
       Per-episode steps & 200 \\\hline
       gamma & 0.95 \\\hline
       learning rate & 0.7 \\\hline
