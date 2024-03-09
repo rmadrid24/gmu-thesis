@@ -42,7 +42,7 @@ The NVM Middleware leverage insights about the workload characteristics, resourc
 \begin{figure}[ht]
   \centering
   \includegraphics[scale=1]{images/nvm_design.png}
-  \caption[NVM Middleware Architecture]{NVM Middleware Architecture}
+  \caption[NVM Middleware Architecture]{Illustration depicting the architecture of the NVM Middleware, which serves as an optimization layer for Intel Optane DC PMem. The NVM Middleware governs the concurrency level on the device, categorizing incoming I/O requests based on their type (blue for interactive and orange for batch) and assigning distinct worker threads for interactive or batch workloads. The number of threads for each workload type is dynamically configurable to adapt to the system's requirements.}
   \label{fig:nvm_architecture}
 \end{figure}
 
@@ -56,7 +56,7 @@ The Monitoring and Resource Management module offers an interface to monitor sys
 
 \begin{table}[ht]
   \centering
-  \caption{Programming Interface}
+  % \caption[NVM Middleware Programming Interface]{Overview of the NVM Middleware programming interface, categorized by functionality. $System$ functions facilitate resource management within the middleware, including database initialization and thread pool management. $Storage$ functions provide a fundamental key-value interface for submitting requests aimed at accessing persistent memory. $RL$ functions provide utilities for the reinforcement learning process, enabling monitoring of system statistics, state retrieval, and triggering scaling actions.}
   \label{table:programming_interface}
   % Tabular environment goes AFTER the caption!
   \begin{adjustbox}{width=1\textwidth}
@@ -65,21 +65,23 @@ The Monitoring and Resource Management module offers an interface to monitor sys
     \hline
     \thead{Category} & \thead{API Name} & \thead{Functionality} \\
     \hline
-    \rowcolor{gray!50} % Color the header row
-    System & start(db, interactiveThreads, batchThreads) & \makecell[cl]{Create PMEMKV database. \\ Start interactive and batch thread pools. \\ Initiate system monitoring in Monitoring and Resource Management Module.} \\
-    System & stop() & \makecell[cl]{Closes PMEMKV database. \\ Stop thread pools. \\ Stop system monitoring.} \\
+    System & start(db, interactiveThreads, batchThreads) & \makecell[cl]{Create the PMEMKV database, start thread pools, \\ and initiate NVM Middleware's monitoring.} \\
     \hline
-    \rowcolor{gray!50}
-    System & get(key, mode) & Retrieves key from persistent memory. \\
-    System & put(key, value, mode) & Writes key to persistent memory. \\
-    \rowcolor{gray!50}
-    RL & get\_stats() & Provides the 99th percentile and throughput observed by the NVM Middleware. \\
-    RL & get\_state() & Provides the current state within the NVM Middleware. \\
-    \rowcolor{gray!50}
+    System & stop() & \makecell[cl]{Close PMEMKV database, stop thread pools, \\ and stop NVM Middleware's monitoring.} \\
+    \hline
+    Storage & get(key, mode) & \makecell[cl] {Submits request to retrieve a key from \\ persistent memory.} \\
+    \hline
+    Storage & put(key, value, mode) & \makecell[cl] {Submits request to write a key to \\ persistent memory.} \\
+    \hline
+    RL & get\_stats() & \makecell[cl] {Provides the 99th percentile and throughput \\ observed by the NVM Middleware.} \\
+    \hline
+    RL & get\_state() & \makecell[cl] {Provides the current state within the \\ NVM Middleware.} \\
+    \hline
     RL & perform\_action(action) & Triggers a scaling action. \\
     \hline
   \end{tabular}
 \end{adjustbox}
+\caption[NVM Middleware Programming Interface]{Overview of the NVM Middleware programming interface, categorized by functionality. $System$ functions facilitate resource management within the middleware, including database initialization and thread pool management. $Storage$ functions provide a fundamental key-value interface for submitting requests aimed at accessing persistent memory. $RL$ functions provide utilities for the reinforcement learning process, enabling monitoring of system statistics, state retrieval, and triggering scaling actions.}
 \end{table}
 
 
@@ -98,7 +100,7 @@ In this section, we discuss the Q-learning algorithm used by the Reinforcement L
 \begin{figure}[ht]
   \centering
   \includegraphics[scale=1]{images/rl_workflow.png}
-  \caption[RL Workflow]{RL Workflow}
+  \caption[Interaction between RL agent and NVM Middleware]{Interaction between the RL agent and the NVM Middleware. At each time step, the RL agent observes (I) the state of the environment and takes a scaling action (II) on the NVM Middleware based on its learned policy. Subsequently, the agent receives a reward (III), which is utilized to iteratively refine its policy.}
   \label{fig:rl_workflow}
 \end{figure}
 
@@ -116,35 +118,31 @@ This reward serves as invaluable feedback for the RL agent, empowering iterative
 
 \begin{table}[ht]
   \centering
-  \caption{The State Representation}
   \label{table:state_space}
   \begin{adjustbox}{width=1\textwidth}
   \begin{tabular}{|l|l|l|}
     \hline
     \thead{Name} & \thead{Description} & \thead{Values} \\
     \hline
-    \rowcolor{gray!50}
     interactiveThreads & \makecell[l]{Number of (interactive) threads assigned\\ to the interactive thread pool.} & $1 \leq \text{interactiveThreads} \leq 32$ \\
     \hline
     batchThreads & \makecell[l]{Number of (batch) threads assigned\\ to the batch thread pool.} & $1 \leq \text{batchThreads} \leq 32$ \\
     \hline
-    \rowcolor{gray!50}
     interactiveQueueSize & \makecell[l]{Number of requests in the interactive queue.} & $\text{interactiveQueueSize} \in \mathbb{R}^+$ \\
     \hline
     batchQueueSize & \makecell[l]{Number of requests in the batch queue.} & $\text{batchQueueSize} \in \mathbb{R}^+$ \\
     \hline
-    \rowcolor{gray!50}
     interactiveBlockSize & \makecell[l]{Average block size of interactive workload.} & $\text{interactiveBlockSize} \in \mathbb{R}^+$ \\
     \hline
     batchBlockSize & \makecell[l]{Average block size of batch workload.} & $\text{batchBlockSize} \in \mathbb{R}^+$ \\
     \hline
-    \rowcolor{gray!50}
     interactiveWriteRatio & \makecell[l]{Proportion of write requests compared\\ to read requests in the interactive workload.} & $\text{interactiveRWRatio} \in \mathbb{R}^+$ \\
     \hline
     batchWriteRatio & \makecell[l]{Proportion of write requests compared\\ to read requests in the batch workload.} & $\text{batchRWRatio} \in \mathbb{R}^+$ \\
     \hline
   \end{tabular}
   \end{adjustbox}
+  \caption[Reinforcement Learning State Representation]{State representation for the reinforcement learning model. The number of interactive and batch threads is capped at 32, as measurements showed performance degradation with more than 32 threads. The interactiveQueueSize and batchQueueSize represent the number of requests in the respective queues within the NVM Middleware. The block sizes and write ratios are determined by analyzing the I/O requests received from client workloads.}
 \end{table}
 
 Table \ref{table:state_space} presents the features of our state representation. At each time step $t$, we define the state $s_t$ as a tuple:
@@ -162,7 +160,6 @@ where $s_t \in S$ represents the state space. The tuple encapsulates the key fea
 
 \begin{table}[ht]
   \centering
-  \caption{Possible Actions in the Action Space}
   \label{table:action_space}
   \begin{tabular}{|c|l|l|}
   \hline
@@ -179,7 +176,8 @@ where $s_t \in S$ represents the state space. The tuple encapsulates the key fea
   8 & Decrease by 1 & Decrease by 1 \\
   \hline
   \end{tabular}
-  \end{table}
+  \caption[Reinforcement Learning Action Space]{Possible actions in the action space of reinforcement learning and their effects on the NVM Middleware's concurrency control mechanism.}
+\end{table}
 
   Table \ref{table:action_space} illustrates the feasible actions within the action space. Each action corresponds to a potential adjustment in the number of interactive and batch threads. The table enumerates nine distinct actions, each with its respective effect on the number of interactive threads and batch threads.
 
@@ -202,7 +200,7 @@ To guide the optimization process of the reinforcement learning agent, we establ
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{images/rl_environment_architecture.png}
-  \caption{Overview of the Environment Architecture}
+  \caption[Overview of the Reinforcement Learning Environment]{Overview of the RL environment constructed for training the RL agent. The environment employs multi-threaded interactive and batch applications to replicate workloads generated by multiple serverless functions with shared access to persistent memory. These applications interact with the NVM Middleware through function calls using its programming interface. Meanwhile, in the background, the agent continuously iterates through a closed feedback loop, observing the environment's state and executing scaling actions based on its policy.}
   \label{fig:rl_environment_architecture}
 \end{figure}
 
@@ -213,7 +211,8 @@ To simulate a multi-tenant serverless scenario, both applications are executed c
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{images/rl_sequence_flow.png}
-  \caption{Agent Process flow}
+  % \caption[Reinforcement Learning Agent Process flow]{Illustration depicting the interaction between RL agent and its environment at each time step. At each time step, the agent's scaling action is performed before executing the next one-second window of I/O requests. Then the environment collects latency and throughput metrics to evaluate the action's efficiency and uses these metrics to return a reward signal that is used by the agent to improve its policy.}
+  \caption[Reinforcement Learning Agent Process Flow]{Illustration depicting the interaction between the RL agent and its environment at each time step. During each time step, the agent executes a scaling action, followed by the processing of the subsequent window of I/O requests by the environment. Subsequently, the environment gathers latency and throughput metrics to assess the effectiveness of the action, providing a reward signal that the agent utilizes to refine its policy.}
   \label{fig:rl_sequence_flow}
 \end{figure}
 
