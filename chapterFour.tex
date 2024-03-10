@@ -9,6 +9,7 @@ In this chapter, the NVM Middleware and the Q-Learning Model. We utilize the env
 \begin{table}[ht]
     \centering
     \label{table:platform_specifications}
+    \caption{Experimental Platform Specifications}
     \begin{tabular}{|l|l|}
       \hline
       Processor & Intel\,\textsuperscript{\tiny\textregistered} Xeon\,\textsuperscript{\tiny\textregistered} Gold 6252   \\\hline
@@ -26,7 +27,6 @@ In this chapter, the NVM Middleware and the Q-Learning Model. We utilize the env
       Operating System & Ubuntu 20.04.4 LTS (Focal Fossa)  \\
       \hline
     \end{tabular}
-    \caption{Experimental Platform Specifications}
 \end{table}
 
 The experimental platform utilized in this study is detailed in Table \ref{table:platform_specifications}. It features an Intel,\textsuperscript{\tiny\textregistered} Xeon,\textsuperscript{\tiny\textregistered} Gold 6252 processor with 2 sockets, each hosting 24 cores and 2 threads per core, totaling 2 NUMA nodes. Each socket is equipped with three memory channels, housing 16 GB DDR4 DIMMs and 128 GB Optane PMMs. In aggregate, the system comprises 192 GB of DRAM and 1.5 TB of Optane persistent memory. To mitigate the NUMA effect, one socket is designated for running the NVM Middleware threads, while the other handles the interactive and batch applications, as described in Section 3.4.3.
