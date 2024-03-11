@@ -66,3 +66,19 @@ To help alleviate the limitations of Intel Optane PMM, we introduce a control la
     \item We propose a Reinforcement Learning model and framework that allows the NVM Middleware to learn from historical data and adapt resources to changing workloads.
     \item Finally, we present empirical results that demonstrate the benefits of our solution.
 \end{itemize}
+
+\section{Structure}
+
+The structure of this research paper is outlined as follows:
+
+Chapter 2 provides background information on Intel Optane DC PMem, serverless computing, and Reinforcement Learning (RL). It elaborates on the techniques employed for implementing the RL model within the NVM Middleware.
+
+Chapter 3 details the work carried out on the NVM Middleware. Beginning with a discussion on the essential characteristics of proper serverless storage, the chapter describes how the NVM Middleware contributes to achieving these characteristics while ensuring efficient utilization of Intel Optane DC PMem. It includes an overview of the architecture and programming interface of the NVM Middleware, followed by insights into the Reinforcement Learning model and the Q-Learning algorithm designed to train the NVM Middleware to dynamically adjust concurrency levels under shifting workloads.
+
+Chapter 4 presents an evaluation of the NVM Middleware, encompassing an assessment of its concurrency control mechanism and the performance of the Q-Learning algorithm.
+
+Chapter 5 explores related work in the fields of Intel Optane DC Persistent Memory, serverless storage, and reinforcement learning for dynamic resource allocation. This chapter also discusses the relationship between our work and previous studies, highlighting similarities and differences.
+
+Chapter 6 discusses limitations inherent in this study and proposes potential avenues for future research and development.
+
+Finally, Chapter 7 concludes the research paper by summarizing the presented work and its implications.
