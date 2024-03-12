@@ -24,6 +24,8 @@
 
 \chapter{Discussions and Future Research}
 
+This chapter delves into the limitations inherent in our methodology and the insights gleaned from the findings presented. Subsequently, potential avenues for future research are explored in light of these limitations.
+
 \textbf{Storage Service Integration:} Originally, this thesis aimed to design a simple storage server facilitating communication with applications via Remote Procedure Calls (RPC), leveraging the NVM Middleware to optimize Intel Optane DC PMem performance. However, our measurements were affected by network overhead in the infrastructure housing the server with Optane DC PMem. Thus, evaluating the NVM Middleware on a real-world serverless storage service remains a future research endeavor. Anna key-value database \cite{wu2019anna} proposes a promising option for assessing the NVM Middleware by extending it to incorporate a storage tier based on Optane DC PMem, thereby utilizing the NVM Middleware as the optimization layer for persistent memory.
 
 \textbf{Reducing Autoscaling Overhead:} Our current approach to scaling resources involves adding or removing up to two threads per one-second window, which may delay the system's adaptation to the optimal combination of interactive and batch threads. This delay could contribute to performance spikes observed in the results. An intriguing avenue for exploration is enabling the NVM Middleware to add or remove more than two threads per time step to expedite adaptation to workload changes, potentially enhancing SLA fulfillment efficiency. However, this approach may introduce additional actions in the action space, increasing the RL model's complexity.
