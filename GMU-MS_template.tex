@@ -64,36 +64,36 @@
 %% In this section, all of the user-specific fields to be used in the
 %% title pages are set
 %% Note: Title must be in title case to look correct for the title page (e.g., important words are capitalized)
-\title{First line of the title\\
-            second line of the title}
-\onelinetitle{The Complete Title is to be Repeated Here without any Line Breaks for the Second Page and for the Abstract Page}
-\author{Author}
+\title{Optimizing Intel Optane DC Persistent Memory Performance\\
+            for Serverless Storage}
+\onelinetitle{Optimizing Intel Optane DC Persistent Memory Performance for Serverless Storage}
+\author{Rafael Alejandro Madrid Rivera}
 \credential{MS}
 \degree{Master of Science}
 \doctype{Thesis}
-\dept{Name of Department}
-\discipline{Discipline}
+\dept{Computer Science}
+\discipline{Computer Science}
 
 \firstdeg{Bachelor of Science}
-\firstdegschool{My Other Former School}
-\firstdegyear{Year of first degree}
+\firstdegschool{Central American Technological University}
+\firstdegyear{2013}
 
-\degreeyear{Year}
+\degreeyear{2024}
 
 % Note: semester name should be written as Fall Semester, Spring Semester, or Summer Semester.
-\degreesemester{X Semester}
+\degreesemester{Spring Semester}
 
 %Enter all information that will appear below the signature line % (e.g., Dr. Dimitrios Ioannou, Advisor) Need a second line? use \addsigline (e.g., Dr. Firstname Dean, Dean \addsigline of Some School)
 % The advisor's name is used in two places. \advisorsignline is on the signature line only. This is needed for the label and if a second line needs added for the signature line
-\advisorname{Dr. First Last}
+\advisorname{Dr. Yue Cheng}
 \makeatletter
 \advisorsignline{\@advisorname, \@doctype\ Director}
 \makeatother
            
-\firstmember{Dr. First Last, Committee Member}
-\secondmember{Dr. First Last, Committee Member}
-\depthead{Dr. First Last, Department Head}
-\dean{Dr. First Last, Dean}
+\firstmember{Dr. Fei Li, Committee Member}
+\secondmember{Dr. Hakan Aydin, Committee Member}
+\depthead{Dr. David Rosenblum, Department Chair}
+\dean{Dr. Robert Pettit, Associate Chair}
 
 %%
 %% Introductory pages
@@ -140,7 +140,13 @@
 %%
 \abstractpage
 
-Enter abstract text.
+Intel Optane DC Persistent Memory (Optane PMem) presents a promising solution for developing a serverless storage service. Leveraging its unique attributes of persistence, substantial capacity, and memory-like speeds, this innovative technology holds potential to serve as efficient storage media, offering low latency and high throughput for a variety of applications running on serverless platforms. However, the dynamic and unpredictable characteristics inherent in serverless computing workloads pose challenges to the effective utilization of Optane PMem.
+
+This thesis delves into the utilization of Optane PMem as storage media for serverless computing workloads. Through simulations of real-world serverless applications with diverse workload characteristics and performance requirements, we analyze the limitations of Optane PMem and their impact on latency and throughput service-level agreement (SLA) metrics. Our findings reveal that concurrent execution of applications sharing persistent memory leads to performance degradation and unpredictable behavior from Optane PMem. Moreover, these limitations pose contractual challenges for cloud providers, affecting their ability to meet SLAs.
+
+To tackle these challenges, this work introduces the Non-Volatile Memory (NVM) Middleware, an optimization layer designed to enhance the efficient utilization of Optane PMem within a serverless computing environment. Seamlessly integrated with serverless storage services, the NVM Middleware assumes responsibility for Optane PMem optimization, thereby alleviating cloud providers of such burdens. Aligned with the objectives of an efficient serverless storage service, the NVM Middleware controls the concurrency level on Optane PMem, ensuring performance isolation among co-located applications. Furthermore, leveraging Reinforcement Learning (RL), an agent is trained to dynamically adjust the concurrency level applied by the NVM Middleware in response to changing workloads, enabling cloud providers to meet performance service level agreements even under shifting workloads.
+
+Our evaluation demonstrates that the concurrency control mechanism implemented by the NVM Middleware enhances both latency and throughput exhibited by Optane PMem compared to scenarios lacking concurrency control, resulting in more predictable performance overall. Additionally, our findings indicate that employing an RL agent to dynamically tune resources within the NVM Middleware in response to changing workloads surpasses static resource allocation strategies.
 
 %%
 %%  the main body of the dissertation
@@ -153,7 +159,7 @@ Enter abstract text.
 \include{chapterThree}
 \include{chapterFour}
 \include{chapterFive}
-% \include{chapterSix}
+\include{chapterSix}
 \include{chapterSeven}
 
 %% include the following commands if there are any appendices
