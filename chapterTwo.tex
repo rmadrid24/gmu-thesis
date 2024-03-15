@@ -82,7 +82,7 @@ Serverless computing, a prominent execution model within cloud computing, revolu
 
 At the heart of serverless computing lies Function-as-a-Service (FaaS), introduced by AWS Lambda in 2015. Since then, various commercial and open-source alternatives have emerged, including Google Cloud Functions, Azure Functions, Apache OpenWhisk, and others. FaaS enables developers to express application logic as stateless functions written in high-level languages such as Java, Python, C, or C++. These functions, known as serverless functions, are packaged together with their dependencies and submitted to the serverless platform. Additionally, developers associate events with each serverless function, such as HTTP requests, file uploads, database triggers, and more. Upon the occurrence of a trigger, the cloud provider promptly executes the associated serverless function, offering a scalable and event-driven approach to application development and deployment \cite{AWSLambd40:online,AzureFun49:online,CloudFun3:online,ApacheOp28:online}.
 
-\subsubsection*{Workload Characterization}
+\subsection{Workload Characterization}
 Previous research has underscored the dynamic and unpredictable nature of Function-as-a-Service (FaaS) workloads within serverless computing environments. Typically, applications in serverless computing are composed of interconnected serverless functions, each serving a specific logical purpose. Analyzing these workloads often involves examining real-world FaaS provider logs to discern patterns and characteristics. Cloud providers face significant challenges in predicting the next function invocation due to the diverse array of triggers employed by applications. Moreover, the heterogeneity of these applications results in substantial variations in invocation frequency, data access sizes, and usage patterns. Data access sizes can range from mere bytes to gigabytes, while invocation frequencies can span several orders of magnitude, with some functions being infrequently called. Learning the invocation patterns of rarely invoked functions is particularly challenging. Additionally, a significant portion of data accesses exhibit bursty behavior, leading to rapid surges in I/O requests as multiple function instances are dynamically spun up to meet application demands. This phenomenon often results in short-lived bursts of intense activity within applications \cite{shahrad2020serverless,romero2021faat,klimovic2018pocket}.
 
 \subsection{Storage for FaaS}
@@ -118,7 +118,6 @@ The fundamental concept underlying RL is the notion of an agent, which takes act
 Figure \ref{fig:sutton_rl_workflow} presents a schematic representation of a standard reinforcement learning scenario. In discrete time steps, the agent perceives the current state $s_t$ from the set of all possible states $S$. It then selects an action $a_t$ from the available actions $A(s_t)$ in the current state. The environment transitions to a new state $s_{t+1}$, and the agent receives a reward $r_t$ associated with the transition $(s_t, a_t, s_{t+1})$.
 
 The agent's behavior is governed by its policy, which maps perceived states to actions. The ultimate aim is to learn an optimal or near-optimal policy that maximizes the cumulative reward. 
-
 
 \subsection{Q-Learning}
 
