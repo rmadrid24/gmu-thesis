@@ -57,7 +57,7 @@ Consequently, this thesis addresses the following research questions:
 
 \section{Contributions}
 
-Our experiments offer valuable insights into the behavior of Optane PMem when employed as persistent storage for serverless workloads. Firstly, we observe that sharing Optane PMem among multi-threaded interactive and batch applications sim results in performance degradation, characterized by increased latency and reduced bandwidth. This outcome aligns with expectations, considering the contention issues experienced by Optane PMM with higher thread counts. Secondly, we find that the performance degradation in Optane PMM varies depending on the workload, affecting either latency or bandwidth more prominently. This discrepancy implies that certain applications may experience greater QoS impacts than others.
+Our experiments offer valuable insights into the behavior of Optane PMem when employed as persistent storage for serverless workloads. Firstly, we observe that sharing Optane PMem among applications simulating real-world serverless interactive and batch applications leads to performance degradation, characterized by increased latency and reduced bandwidth. This outcome aligns with expectations, considering the contention issues experienced by Optane PMM with higher thread counts. Secondly, we find that the performance degradation in Optane PMM varies depending on the workload, affecting either latency or bandwidth more prominently. This discrepancy implies that certain applications may experience greater QoS impacts than others.
 
 To address the limitations of Intel Optane PMM, we introduce a control layer designed to optimize its utilization within serverless environments. Named the NVM Middleware, this layer integrates with storage services to manage Optane PMM access effectively, mitigating contention. The NVM Middleware implements distinct concurrency levels for interactive and batch applications, ensuring performance isolation across different application types. Leveraging machine learning techniques, the NVM Middleware dynamically adjusts these concurrency levels to meet current demand and adapt to changing workloads. We advocate for the use of online reinforcement learning algorithms, given the evolving data access patterns typical of serverless workloads.
 
@@ -67,7 +67,7 @@ Our contributions can be summarized as follows:
     \item We conduct an experimental study that assesses the capabilities and limitations of Intel Optane PMem as persistent storage for serverless workloads, a scenario not previously explored.
     \item We introduce the NVM Middleware, a control layer designed to reduce contention within Optane PMem while maintaining performance isolation among diverse application types.
     \item We propose a Reinforcement Learning model to train an agent capable of dynamically scaling and provisioning resources within the NVM Middleware to meet service level agreements amidst changing workloads.
-    \item Finally, we present empirical evidence demonstrating the effectiveness of our proposed solution.
+    \item Finally, we provide empirical evidence showcasing the effectiveness of the concurrency control implemented by the NVM Middleware, along with the efficiency of the RL agent devised to adjust the NVM Middleware in response to workload fluctuations.
 \end{itemize}
 
 \section{Structure}
