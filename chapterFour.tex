@@ -30,7 +30,7 @@ This chapter provides an evaluation of the NVM Middleware. Firstly, we describe 
 
 The experimental platform utilized in this study is detailed in Table \ref{table:platform_specifications}. It features an Intel\textsuperscript{\tiny\textregistered} Xeon\textsuperscript{\tiny\textregistered} Gold 6252 processor with 2 sockets, each hosting 24 cores and 2 threads per core, totaling 2 NUMA nodes. Each socket is equipped with three memory channels, housing 16 GB DDR4 DIMMs and 128 GB Optane PMem DIMMs. In aggregate, the system comprises 192 GB of DRAM and 1.5 TB of persistent memory. To mitigate the NUMA effect, one socket is designated for running the NVM Middleware threads, while the other handles the interactive and batch applications, as described in Section 3.4.3.
 
-\subsection{Optane DC PMem Configuration}
+\subsection{Optane PMem Configuration}
 As outlined earlier, this thesis concentrates on exploring the persistent capabilities of Optane PMem. Consequently, Optane PMem is employed in the App Direct Mode throughout our experiments. To facilitate the utilization of persistent memory, we expose it via an xfs filesystem configured in dax mode, thereby bypassing the page cache. Additionally, we enhance memory management and performance by configuring the persistent memory with huge pages (2MiB) \cite{Speeding28:online}. Lastly, we deploy a PMEMKV database with a capacity of 600GB, configured with its persistent concurrent engine.
 
 \subsection{Workload Generators}
