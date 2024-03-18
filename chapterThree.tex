@@ -1,25 +1,25 @@
-\chapter[Optimizing Optane PMem Performance for Serverless Storage]{NVM Middleware: An Optimization Layer for Optane PMem}
+\chapter[Optimizing Optane PMem Performance for Serverless Storage]{Optimizing Optane PMem Performance for Serverless Storag}
 
-As discussed earlier, the introduction of Intel Optane PMM presents a significant opportunity for serverless storage services. This memory technology offers a unique combination of cost-effective high capacity, high performance, and support for data persistence \cite{IntelOp15:online}. When utilized in App-Direct mode, Optane DIMMs and DRAM DIMMs function as independent memory resources directly controlled by applications for load/store operations. This configuration allows Optane PMM capacity to serve as byte-addressable persistent memory mapped into the system application space, providing direct accessibility to applications. Consequently, Optane PMM can function as persistent storage with memory-like speeds.
+As discussed earlier, the introduction of Optane PMem presents a significant opportunity for serverless storage services. This memory technology offers a unique combination of cost-effective high capacity, high performance, and support for data persistence \cite{IntelOp15:online}. When utilized in App-Direct mode, Optane PMem DIMMs and DRAM DIMMs function as independent memory resources directly controlled by applications for load/store operations. This configuration allows Optane PMem capacity to serve as byte-addressable persistent memory mapped into the system application space, providing direct accessibility to applications. Consequently, Optane PMem can function as persistent storage with memory-like speeds.
 
-However, resource contention within Optane PMM can lead to substantial performance and contractual implications for multi-tenant serverless storage services. The limited capability of Optane PMM to handle accesses from multiple threads can result in degraded system performance during workload spikes, undermining the hallmark autoscaling features of serverless computing. Moreover, in multi-user environments, where physical resources are shared among tenants, performance variations due to Optane PMM contention can hinder service providers from offering consistent service level agreements (SLAs).
+However, resource contention within Optane PMem can lead to substantial performance and contractual implications for multi-tenant serverless storage services. The limited capability of Optane PMem to handle accesses from multiple threads can result in degraded system performance during workload spikes, undermining the hallmark autoscaling features of serverless computing. Moreover, in multi-user environments, where physical resources are shared among tenants, performance variations due to Optane PMem contention can hinder service providers from offering consistent service level agreements.
 
-To mitigate contention effects, prior research recommends restricting the number of threads accessing Optane PMM simultaneously. For instance, Yang et al. \cite{yang2020empirical} enhanced the performance of an NVM-aware file system by limiting the number of writer threads accessing each Optane DIMM. Similarly, Ribbon \cite{wu2020ribbon} dynamically adjusts the number of threads performing CLF operations at runtime. While effective, such approaches introduce management complexities for system administrators managing multi-tenant serverless storage environments.
+To mitigate contention effects, prior research recommends restricting the number of threads accessing Optane PMem simultaneously. For instance, Yang et al. \cite{yang2020empirical} enhanced the performance of an PM-aware file system by limiting the number of writer threads accessing each Optane PMem DIMM. Similarly, Ribbon \cite{wu2020ribbon} dynamically adjusts the number of threads performing cache line flushing (CLF) operations at runtime. While effective, such approaches introduce management complexities for system administrators managing multi-tenant serverless storage environments.
 
-Given the intricate nature of serverless computing workloads, implementing efficient concurrency control mechanisms to optimize an Optane-based serverless storage service is challenging. These challenges are elaborated in Section 3.1, but, in summary, service providers face three key tasks: ensuring predictable performance to meet diverse SLAs, transparently scaling resources to match current workload demands, and swiftly adapting to sudden workload shifts. To address these challenges, we propose a solution that shoulders these responsibilities on behalf of service providers.
+Given the intricate nature of FaaS workloads, implementing efficient concurrency control mechanisms to optimize an Optane PMem-based serverless storage service is challenging. These challenges are elaborated in Section 3.1, but, in summary, service providers face three key tasks: ensuring predictable performance to meet diverse SLAs, transparently scaling resources to match current workload demands, and swiftly adapting to sudden workload shifts. To address these challenges, we propose a solution that shoulders these responsibilities on behalf of service providers.
 
-This chapter introduces the NVM Middleware, a middleware optimization layer positioned between a serverless storage service and Intel Optane Persistent Memory (PMem). Its primary objective is to address the limitations associated with Intel Optane PMM while simultaneously meeting the diverse service level agreements (SLAs) required by multiple tenants amid varying workloads. Additionally, the chapter describes the development of a reinforcement learning agent to enable the NVM Middleware to quickly adapt to changing workloads. This agent considers workload characteristics and SLAs, learning from past experiences to dynamically scale resources.
+This chapter introduces the NVM Middleware, a middleware optimization layer positioned between a serverless storage service and Intel Optane PMem. Its primary objective is to address the limitations associated with Optane PMem while simultaneously meeting the diverse (SLAs) required by multiple tenants amid varying workloads. Additionally, the chapter describes the development of a reinforcement learning agent to enable the NVM Middleware to quickly adapt to changing workloads. This agent considers workload characteristics and SLAs metrics, learning from past experiences to dynamically scale resources.
 % The NVM Middleware distinguishes between latency-critical and throughput-oriented workloads, employing tailored concurrency control mechanisms for each category. This approach minimizes contention on the memory device and reduces interference among workloads with differing SLAs. Additionally, we propose the development of a reinforcement learning agent to enable the NVM Middleware to quickly adapt to changing workloads. This agent considers workload characteristics and SLAs, learning from past experiences to dynamically scale resources.
 
 The subsequent sections of this chapter elaborate on the design objectives of the NVM Middleware, providing insights into its architectural principles and programming interface. Furthermore, the chapter delves into the implementation aspects of the reinforcement learning model, elucidating the training methodology employed to equip an agent with the capability to dynamically adjust the NVM Middleware's concurrency levels in response to fluctuating workloads. Lastly, the chapter provides an in-depth discussion on the implementation intricacies of the NVM Middleware.
 
 \section{Motivation}
 
-In this section, we discuss the pain points of controlling the number of threads to optimize Optane PMM within a serverless storage service and explain the design goals of the NVM Middleware.
+In this section, we discuss the pain points of controlling concurrency levels to optimize Optane PMem within a serverless storage service and explain the design goals of the NVM Middleware.
 
 \subsection{Concurrency Control Challenges in a serverless storage service}
 
-When building an Optane PMM based serverless storage service, optimizing the memory's performance is just the start. Early works in serverless computing have identified several tasks that a storage service must perform efficiently to meet the demands of serverless computing \cite{180275,jonas2019cloud,klimovic2018understanding,klimovic2018pocket,wu2019autoscaling,romero2021faat}. As a result, service providers must ensure that their concurrency control policies do not interfere with these design goals. In this work, we focus on three challenges faced by service providers when designing a high-performance storage service based on Optane PMM.
+When building an Optane PMem-based serverless storage service, optimizing the memory's performance is just the start. Early works in serverless computing have identified several tasks that a storage service must perform efficiently to meet the demands of serverless computing \cite{180275,jonas2019cloud,klimovic2018understanding,klimovic2018pocket,wu2019autoscaling,romero2021faat}. As a result, service providers must ensure that their concurrency control policies do not interfere with these design goals. In this work, we focus on three challenges faced by service providers when designing a high-performance storage service.
 
 \subsubsection{Support for a wide heterogeneity of applications}
 
@@ -31,14 +31,15 @@ In serverless computing, applications are often deployed as a set of serverless 
   \centering
   \includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio,angle=0]{images/measurement-study-latency.png}
   \includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio,angle=0]{images/measurement-study-tp.png}
-  \caption[Impact of Concurrent Applications on Optane DC PMem Latency and Throughput]{Comparison of latency and throughput variations observed in Optane DC PMem when running YCSB and SVD applications concurrently. The top image depicts the latency comparison between YCSB running alone and concurrently with SVD, while the bottom image illustrates the throughput comparison between SVD running alone and concurrently with YCSB. Notably, concurrent application execution significantly impacts the 99th latency compared to throughput.}
+  \caption[Impact of Concurrent Applications on Optane PMem 99th Latency and Throughput]{Comparison of 99th latency and throughput variations observed in Optane DC PMem when running YCSB and SVD applications concurrently. The top image depicts the latency comparison between YCSB running alone and concurrently with SVD, while the bottom image illustrates the throughput comparison between SVD running alone and concurrently with YCSB. Notably, concurrent application execution significantly impacts the 99th latency compared to throughput.}
   \label{fig:measurement_study}
 \end{figure}
 
-A measurement study was conducted to evaluate the effects of concurrent interactive and batch applications sharing Optane DC PMem. The study utilized applications and the experimental platform detailed in Section 4. The results are illustrated in Figure \ref{fig:measurement_study}. In this experiment, both an interactive application (YCSB) and a batch application (SVD) were executed individually and concurrently, utilizing Intel Optane DC PMem as their storage medium. The findings illustrate a noticeable impact on both latency and throughput when running the applications concurrently. Particularly, latency is significantly affected compared to throughput, suggesting contention among tenant workloads sharing Intel Optane DC PMem. Hence, effective concurrency control mechanisms are essential to mitigate such contention, while reaching a balance between latency and throughput exhibited.
+A measurement study was conducted to evaluate the effects of concurrent interactive and batch applications sharing Optane PMem. The study utilized the applications and experimental platform detailed in Section 4. The results are illustrated in Figure \ref{fig:measurement_study}. In this experiment, both an interactive application (YCSB) and a batch application (SVD) were executed individually and concurrently, utilizing Optane PMem as their storage medium. The findings illustrate a noticeable impact on both throughput and 99th latency when running the applications concurrently. Particularly, latency is significantly affected compared to throughput, suggesting contention among tenant workloads sharing Optane PMem. Hence, effective concurrency control mechanisms are essential to mitigate such contention, while reaching a balance between latency and throughput exhibited.
 
 \subsubsection{Compliance with Service Level Agreements}
-The success of a storage service relies on its ability to comply with various service level agreements (SLAs). SLAs play a critical role in governing the relationship between the storage provider and its customers. They help establish clear expectations between both parties regarding the quality of storage service. Therefore, service providers face the challenge of staying in compliance with these SLAs while they seek to optimize Optane PMM. 
+
+The success of a storage service relies on its ability to comply with various SLAs. SLAs play a critical role in governing the relationship between the storage provider and its customers. They help establish clear expectations between both parties regarding the quality of storage service. Therefore, service providers face the challenge of staying in compliance with these SLAs while they seek to optimize Optane PMem. 
 
 \subsubsection{Automatic and transparent scaling}
 
@@ -48,24 +49,24 @@ Serverless workloads are extremely unpredictable. These workloads can launch hun
 
 We design NVM Middleware with three main design goals.
 
-\textbf{Workload-aware Contention Management.} The NVM Middleware leverage insights about the workload characteristics, resource demands, and performance requirements of applications to make informed decisions about resource allocation and contention resolution. By dynamically adjusting resource allocation and contention resolution mechanisms based on the workload characteristics, the NVM Middleware mitigates contention-induced performance degradation and ensures efficient resource sharing among co-located applications. This adaptive approach enables the NVM Middleware to allocate resources judiciously to maximize overall system efficiency and meet diverse performance requirements of both interactive and batch applications. By using the content-aware contention management offered by the NVM Middleware, a storage system using Optane PMM can effectively balance the needs of different workload types, ensuring optimal performance and resources utilizing in multi-tenant environments.
+\textbf{Workload-aware Contention Management.} The NVM Middleware leverage insights about the workload characteristics and performance requirements of applications to make informed decisions about resource allocation and contention resolution. It dynamically adjusts resource allocation for each application type independently, mitigating performance degradation caused by contention and enabling efficient resource sharing among co-located applications.. This adaptive approach enables the NVM Middleware to allocate resources judiciously to maximize overall system efficiency and meet diverse performance requirements of both interactive and batch applications. By using the workload-aware contention management offered by the NVM Middleware, a storage system using Optane PMem can effectively balance the needs of different workload types, ensuring optimal performance and resources utilizing in multi-tenant environments.
 
-\textbf{SLA-driven autoscaling policies.} The NVM Middleware leverages SLAs, which define the quality-of-service parameters agreed up between the service provider and their customers, to dynamically adjust contention resolution mechanisms in response to changes in service level agreement metrics. It continuously monitors SLA metrics, such as 99th latency and throughput, and evaluates its own performance against predefined SLA targets. This real-time monitoring allows the NVM Middleware to detect deviations from SLA requirements and triggers scaling actions to dynamically adjust resource allocation. By aligning resource provisioning with SLA requirements, the NVM Middleware can ensure a consistent and reliable performance from Optane PMM, even under dynamic workload changes.
+\textbf{SLA-driven autoscaling policies.} The NVM Middleware leverages SLAs, which define the quality-of-service parameters agreed up between the service provider and their customers, to dynamically adjust contention resolution mechanisms in response to changes in SLA metrics. It continuously monitors SLA metrics, such as 99th latency and throughput, and evaluates its own performance against predefined SLA targets. This real-time monitoring allows the NVM Middleware to detect deviations from SLA requirements and triggers scaling actions to dynamically adjust resource allocation. By aligning resource provisioning with SLA requirements, the NVM Middleware can ensure a consistent and reliable performance from Optane PMem, even under dynamic workload changes.
 
-\textbf{RL-driven autoscaling policies.} Besides leveraging SLAs to dynamically provision resources and adjust contention resolution mechanisms, our solution proposes the use of Reinforcement Learning to learn from past experiences and predict future behaviors.  These RL-driven policies enable the NVM Middleware to adapt to changing workload patterns over time and meet SLAs objectives more effectively than traditional threshold-based approaches []. Moreover, given the dynamic and unpredictable of serverless workloads, we propose a model-free algorithm, Q-Learning, to continuously learn the optimal policy based on observed experiences, allowing the NVM Middleware to adapt to new scenarios without needing to explicitly model them.
+\textbf{RL-driven autoscaling policies.} Besides leveraging SLAs to dynamically provision resources and adjust contention resolution mechanisms, our solution proposes the use of Reinforcement Learning to learn from past experiences and predict future behaviors.  These RL-driven policies enable the NVM Middleware to adapt to changing workload patterns over time and meet SLAs objectives more effectively than traditional threshold-based approaches \cite{cano2017curator}. Moreover, given the dynamic and unpredictable nature of FaaS workloads, we propose a model-free algorithm, Q-Learning, to continuously learn the optimal policy based on observed experiences, allowing the NVM Middleware to adapt to new scenarios without needing to explicitly model them.
 
 \section{Architecture}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[scale=1]{images/nvm_design.png}
-  \caption[NVM Middleware Architecture]{Illustration depicting the architecture of the NVM Middleware, which serves as an optimization layer for Intel Optane DC PMem. The NVM Middleware governs the concurrency level on the device, categorizing incoming I/O requests based on their type (blue for interactive and orange for batch) and assigning distinct worker threads for interactive or batch workloads. The number of threads for each workload type is dynamically configurable to adapt to the system's requirements.}
+  \caption[NVM Middleware Architecture]{Illustration depicting the architecture of the NVM Middleware, which serves as an optimization layer for Optane PMem. The NVM Middleware governs the concurrency level on the device, categorizing incoming I/O requests based on their type (blue for interactive and orange for batch) and assigning distinct worker threads for interactive or batch workloads. The number of threads for each workload type is dynamically configurable to adapt to the system's requirements.}
   \label{fig:nvm_architecture}
 \end{figure}
 
-Figure \ref{fig:nvm_architecture} provides an overview of the NVM Middleware architecture. Positioned as a middle layer connecting user applications with Optane PMM, its design is tailored for seamless integration within a storage service, serving as an optimization layer specifically targeting Optane PMM. It comprises a request handler, two concurrency thread pools, and a monitoring and resource management module.
+Figure \ref{fig:nvm_architecture} provides an overview of the NVM Middleware architecture. Positioned as a middle layer connecting user applications with Optane PMem, its design is tailored for seamless integration within a storage service, serving as an optimization layer specifically targeting Optane PMem. It comprises a request handler, two concurrency thread pools, and a monitoring and resource management module.
 
-The request handler serves as the primary interface for handling user I/O requests. Upon receipt, it segregates requests into two distinct non-blocking First-In-First-Out (FIFO) queues: one tailed for latency-sensitive requests and the other for throughput-centric ones. Leveraging insights into workload characteristics, the handler intelligently allocates requests to the appropriate queue. Moreover, each queue is assigned a dedicated pool of worker threads tasked with dispatching I/O requests to Optane PMM using PMEMKV. Notably, these thread pools operate independently and are dynamically managed and scaled by the Reinforcement Learning agent to meet predetermined latency and throughput goals.
+The request handler serves as the primary interface for handling user I/O requests. Upon receipt, it segregates requests into two distinct non-blocking First-In-First-Out (FIFO) queues: one tailed for interactive requests and the other for batch ones. Leveraging insights into workload characteristics, the handler intelligently allocates requests to the appropriate queue. Moreover, each queue is assigned a dedicated pool of worker threads tasked with dispatching I/O requests to Optane PMem using PMEMKV. Notably, these thread pools operate independently and are dynamically managed and scaled by the Reinforcement Learning agent to meet predetermined latency and throughput goals.
 
 The Monitoring and Resource Management module offers an interface to monitor system load and SLA performance metrics. This module initiates a separate control thread tasked with gathering data on key parameters within the NVM Middleware, such as 99th latency, throughput, and system load. Utilizing this information, the RL agent makes data-driven decisions regarding optimal thread pool scaling. Subsequently, these decisions are communicated to the Monitoring and Resource Management module, which executes the required actions within the NVM Middleware.
 
@@ -75,7 +76,7 @@ The Monitoring and Resource Management module offers an interface to monitor sys
   \centering
   % \caption[NVM Middleware Programming Interface]{Overview of the NVM Middleware programming interface, categorized by functionality. $System$ functions facilitate resource management within the middleware, including database initialization and thread pool management. $Storage$ functions provide a fundamental key-value interface for submitting requests aimed at accessing persistent memory. $RL$ functions provide utilities for the reinforcement learning process, enabling monitoring of system statistics, state retrieval, and triggering scaling actions.}
   \label{table:programming_interface}
-  \caption[NVM Middleware Programming Interface]{Overview of the NVM Middleware programming interface, categorized by functionality. $System$ functions facilitate resource management within the middleware, including database initialization and thread pool management. $Storage$ functions provide a fundamental key-value interface for submitting requests aimed at accessing persistent memory. $RL$ functions provide utilities for the reinforcement learning process, enabling monitoring of system statistics, state retrieval, and triggering scaling actions.}
+  \caption[NVM Middleware Programming Interface]{Overview of the NVM Middleware programming interface, categorized by functionality. $System$ functions facilitate resource management within the NVM Middleware, including database initialization and thread pool management. $Storage$ functions provide a fundamental key-value interface for submitting requests aimed at accessing persistent memory. $RL$ functions provide utilities for the reinforcement learning process, enabling monitoring of system statistics, state retrieval, and triggering scaling actions.}
   % Tabular environment goes AFTER the caption!
   \begin{adjustbox}{width=1\textwidth}
   \begin{tabular}{|l|l|l|}
@@ -110,7 +111,7 @@ The $get\_stats$ function furnishes insights into the 99th percentile and throug
 
 \section{Reinforcement Learning Component}
 
-In this section, we discuss the Q-learning algorithm used by the Reinforcement Learning agent to dynamically adjust the number of threads assigned to each thread pool. The agent’s goal is to find the best combination of threads that meets predetermined latency and throughput SLAs while minimizing contention and ensuring efficient utilization of Intel Optane PMM. 
+In this section, we discuss the Q-learning algorithm used by the Reinforcement Learning agent to dynamically adjust the number of threads assigned to each thread pool. The agent’s goal is to find the best combination of threads that meets predetermined latency and throughput SLAs while minimizing contention and ensuring efficient utilization of Optane PMem. 
 
 \subsection{Integration with the NVM Middleware}
 
@@ -121,13 +122,13 @@ In this section, we discuss the Q-learning algorithm used by the Reinforcement L
   \label{fig:rl_workflow}
 \end{figure}
 
-Figure \ref{fig:rl_workflow} offers a visual representation of the interaction between the reinforcement learning (RL) agent and the NVM Middleware. At each time step, the NVM Middleware receives a diverse influx of requests, spanning both latency-sensitive and throughput-oriented tasks. These requests necessitate translation into actionable I/O commands directed towards the Intel Optane Persistent Memory Module (PMM).
+Figure \ref{fig:rl_workflow} offers a visual representation of the interaction between the RL agent and the NVM Middleware. At each time step, the NVM Middleware receives a diverse influx of requests, spanning both interactive and batch tasks. These requests necessitate translation into actionable I/O commands directed towards the Optane PMem.
 
 Concurrently, the RL agent adeptly captures the environment's current state, leveraging real-time workloads' characteristics and performance metrics provided by the monitoring module. Utilizing this information, the agent orchestrates the selection of an optimal action, guiding the dynamic adjustment of threads within the interactive and batch thread pools. This adaptive decision-making process is exemplified by actions like augmenting the count of interactive threads to address evolving workload demands.
 
-Following action selection, the NVM Middleware's resource management module implements the chosen course of action, fine-tuning the NVM Middleware's interactive and batch threads to efficiently handle incoming user requests. Upon the completion of each time step, the action's effectiveness is rigorously assessed against predefined service level agreement (SLA) targets, yielding a reward signal generated by a reward manager.
+Following action selection, the NVM Middleware's resource management module implements the chosen course of action, fine-tuning the NVM Middleware's interactive and batch threads to efficiently handle incoming user requests. Upon the completion of each time step, the action's effectiveness is rigorously assessed against predefined SLA targets, yielding a reward signal generated by a reward manager.
 
-This reward serves as invaluable feedback for the RL agent, empowering iterative policy updates aimed at refining decision-making strategies in subsequent time steps. Thus, the presented framework embodies a recursive learning cycle, wherein the RL agent continuously hones its behavior through real-world interactions, ensuring adaptive responsiveness to evolving workload dynamics.
+The reward serves as invaluable feedback for the RL agent, empowering iterative policy updates aimed at refining decision-making strategies in subsequent time steps. Thus, the presented framework embodies a recursive learning cycle, wherein the RL agent continuously hones its behavior through real-world interactions, ensuring adaptive responsiveness to evolving workload dynamics.
 
 \subsection{Reinforcement Learning Model}
 
@@ -142,21 +143,21 @@ This reward serves as invaluable feedback for the RL agent, empowering iterative
     \hline
     \thead{Name} & \thead{Description} & \thead{Values} \\
     \hline
-    interactiveThreads & \makecell[l]{Number of (interactive) threads assigned\\ to the interactive thread pool.} & $1 \leq \text{interactiveThreads} \leq 32$ \\
+    interactiveThreads & \makecell[l]{Number of interactive threads assigned\\ to the interactive thread pool.} & $1 \leq \text{interactiveThreads} \leq 32$ \\
     \hline
-    batchThreads & \makecell[l]{Number of (batch) threads assigned\\ to the batch thread pool.} & $1 \leq \text{batchThreads} \leq 32$ \\
+    batchThreads & \makecell[l]{Number of batch threads assigned\\ to the batch thread pool.} & $1 \leq \text{batchThreads} \leq 32$ \\
     \hline
     interactiveQueueSize & \makecell[l]{Number of requests in the interactive queue.} & $\text{interactiveQueueSize} \in \mathbb{R}^+$ \\
     \hline
     batchQueueSize & \makecell[l]{Number of requests in the batch queue.} & $\text{batchQueueSize} \in \mathbb{R}^+$ \\
     \hline
-    interactiveBlockSize & \makecell[l]{Average block size of interactive workload.} & $\text{interactiveBlockSize} \in \mathbb{R}^+$ \\
+    interactiveBlockSize & \makecell[l]{Average data access size of interactive workload.} & $\text{interactiveBlockSize} \in \mathbb{R}^+$ \\
     \hline
-    batchBlockSize & \makecell[l]{Average block size of batch workload.} & $\text{batchBlockSize} \in \mathbb{R}^+$ \\
+    batchBlockSize & \makecell[l]{Average data access size of batch workload.} & $\text{batchBlockSize} \in \mathbb{R}^+$ \\
     \hline
-    interactiveWriteRatio & \makecell[l]{Proportion of write requests compared\\ to read requests in the interactive workload.} & $\text{interactiveRWRatio} \in \mathbb{R}^+$ \\
+    interactiveWriteRatio & \makecell[l]{Proportion of write requests compared\\ to read requests in the interactive workload.} & $\text{interactiveWRatio} \in \mathbb{R}^+$ \\
     \hline
-    batchWriteRatio & \makecell[l]{Proportion of write requests compared\\ to read requests in the batch workload.} & $\text{batchRWRatio} \in \mathbb{R}^+$ \\
+    batchWriteRatio & \makecell[l]{Proportion of write requests compared\\ to read requests in the batch workload.} & $\text{batchWRatio} \in \mathbb{R}^+$ \\
     \hline
   \end{tabular}
   \end{adjustbox}
@@ -167,11 +168,11 @@ Table \ref{table:state_space} presents the features of our state representation.
 \[
 \begin{aligned}
 s_t = (& \text{interactiveThreads}_t, \text{batchThreads}_t, \text{InteractiveQueueSize}_t, \text{batchQueueSize}_t, \\
-& \text{interactiveBlockSize}_t, \text{batchBlockSize}_t, \text{interactiveRWRatio}_t, \text{batchRWRatio}_t )
+& \text{interactiveBlockSize}_t, \text{batchBlockSize}_t, \text{interactiveWRatio}_t, \text{batchWRatio}_t )
 \end{aligned}
 \]
 
-where $s_t \in S$ represents the state space. The tuple encapsulates the key features characterizing the system's current state, including the number of interactive and batch threads, number of pending requests in the queues, individual workload block sizes, and write ratio for both interactive and batch workloads.
+where $s_t \in S$ represents the state space. The tuple encapsulates the key features characterizing the system's current state, including the number of interactive and batch threads, number of pending requests in the NVM Middleware's queues, individual workload data access sizes, and write ratio for both interactive and batch workloads.
 
 \subsubsection{Action Space}
 
@@ -221,7 +222,7 @@ To guide the optimization process of the reinforcement learning agent, we establ
   \label{fig:rl_environment_architecture}
 \end{figure}
 
-The environment architecture designed for training and evaluating the RL agent is depicted in Figure \ref{fig:rl_environment_architecture}. This architecture comprises several key components, including an interactive multi-threaded application, a batch multi-threaded application, the NVM Middleware, and Intel Optane PMM.
+The environment architecture designed for training and evaluating the RL agent is depicted in Figure \ref{fig:rl_environment_architecture}. This architecture comprises several key components, including an interactive multi-threaded application, a batch multi-threaded application, the NVM Middleware, and Intel Optane PMem.
 
 To simulate a multi-tenant serverless scenario, both applications are executed concurrently. Workload patterns for each application are derived from collected serverless traces. To emulate high concurrency levels typical in serverless environments, multiple threads within each application are employed to dispatch requests to the NVM Middleware via the API described in Section 3.3. Meanwhile, the NVM Middleware processes these requests in accordance with the workflow outlined in Section 3.2.
 
@@ -252,7 +253,7 @@ Additionally, we preprocess the features by standardizing them using the standar
 
 \subsubsection{Proposed Q-Learning Algorithm}
 
-Algorithm \ref{algo:q_learning_mw} outlines the Q-Learning process for training an agent to make optimal decisions in an environment. It takes the bootstrapped Q-value models $M_a$ for all actions $a$ and outputs the new learned models after training.
+Algorithm \ref{algo:q_learning_mw} outlines the Q-Learning process for training an agent to make optimal decisions in the environment. It takes the bootstrapped Q-value models $M_a$ for all actions $a$ and outputs the new learned models after training.
 
 The algorithm initializes the training parameters and then iterates over a specified number of episodes. Within each episode, the environment is reset, and the agent interacts with it until the episode is complete. At each step, the agent observes the current state $s_t$, selects an action $a_t$ based on an $\epsilon$-greedy policy, takes the action, and observes the resulting reward $r$ and next state $s_{t+1}$.
 

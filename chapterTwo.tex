@@ -33,7 +33,7 @@ Intel Optane DC Persistent Memory (Optane PMem) represents a significant advance
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.6]{images/pmem_storage_pyramid.jpg}
-    \caption[Memory-Storage Hierarchy with Persistent Memory]{Illustration of the Memory-Storage Hierarchy with Persistent Memory. Persistent memory introduces a new tier in the hierarchy, bridging the performance and capacity gap between traditional volatile memory and persistent storage. Adapted from \cite{Introduc86:online}.}
+    \caption[Memory-Storage Hierarchy with persistent memory]{Illustration of the Memory-Storage Hierarchy with persistent pemory. Persistent memory introduces a new tier in the hierarchy, bridging the performance and capacity gap between traditional volatile memory and persistent storage. Adapted from \cite{Introduc86:online}.}
     \label{fig:pmem_storage_pyramid}
 \end{figure}
 
@@ -50,7 +50,7 @@ Similar to conventional DRAM DIMMs, Optane PMem DIMMs are positioned on the memo
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.7]{images/optane-communication.png}
-    \caption[Intel Optane Persistent Memory Module Architecture]{Illustration depicting the architecture of Intel Optane Persistent Memory Module (PMM). Adapted from \cite{yang2020empirical}.}
+    \caption[Intel Optane DC Persistent Memory Module Architecture]{Illustration depicting the architecture of Intel Optane DC Persistent Memory. Adapted from \cite{yang2020empirical}.}
     \label{fig:optane_communication}
 \end{figure}
 
@@ -77,7 +77,7 @@ In the realm of persistent memory technology, maintaining data consistency acros
 
 PMDK comprises a comprehensive suite of libraries and tools tailored for both application developers and system administrators, aiming to streamline the management and utilization of persistent memory devices. Drawing on the SNIA NVM Programming model \cite{NVMProgr73:online} as its foundation, these libraries extend its capabilities to varying extents. Some libraries offer simplified wrappers around operating system primitives, facilitating ease of use, while others provide sophisticated data structures optimized for persistent memory usage \cite{scargall2020pmem}.
 
-In the scope of this thesis, we leverage pmemkv \cite{GitHubpm66:online}, a persistent local key-value store provided by PMDK. Designed with cloud environments in mind, pmemkv complements PMDK's suite of libraries with cloud-native support, abstracting the intricacies of programming with persistent memory through a familiar key-value API. Notably, pmemkv distinguishes itself from traditional key-value databases by enabling direct access to data. This means that reading data from persistent memory circumvents the need for copying it into DRAM—an approach that significantly enhances the performance of applications leveraging persistent memory \cite{scargall2020pmem}.
+In the scope of this thesis, we leverage PMEMKV \cite{GitHubpm66:online}, a persistent local key-value store provided by PMDK. Designed with cloud environments in mind, PMEMKV complements PMDK's suite of libraries with cloud-native support, abstracting the intricacies of programming with persistent memory through a familiar key-value API. Notably, PMEMKV distinguishes itself from traditional key-value databases by enabling direct access to data. This means that reading data from persistent memory circumvents the need for copying it into DRAM—an approach that significantly enhances the performance of applications leveraging persistent memory \cite{scargall2020pmem}.
 
 \section{Serverless Computing}
 Serverless computing, a prominent execution model within cloud computing, revolutionizes the deployment process by allowing developers to deploy code without the need for provisioning or managing server infrastructure. Although termed "serverless," this model still utilizes servers provided by cloud vendors to execute developers' code. However, the distinguishing feature lies in the abstraction of infrastructure management from the developer's perspective. Developers no longer concern themselves with resource provisioning, scaling, fault tolerance, monitoring, or security patches; instead, they focus solely on code development. Cloud providers take on the responsibility of handling these infrastructure-related tasks on behalf of their customers. Consequently, developers are charged based on the execution time and resources consumed during their code invocations, offering a pay-per-use billing model \cite{jonas2019cloud,romero2021faat,klimovic2018pocket}.
