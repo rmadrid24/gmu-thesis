@@ -15,9 +15,9 @@
 
 \begin{table}[ht]
     \centering
-    \label{table:hyperparameter_tuning}
     % \caption[RL Regression Models: Hyperparameter Tuning]{List of parameters used for tuning hyperparameters of the polynomial regression models used for function approximation. $Degree$ represents the degree of the polynomial function. $Loss$ represents the loss funciton used by stochastic gradient descent. regularizer represents the penalty to applied to the loss function to shrink the model parameters towards the zero vector. This technique is widely used in regression models to avoid overfitting the data. $Alpha$ represent the strenght to whic the regularization penalty is applied. $learning\_rate$ represents the learning rate schedul of the model. $Max_iter$ represents the maximum number of passes over the training dat}
     \caption[Hyperparameter Tuning Options for Polynomial Regression Models]{Overview of hyperparameters used in the tuning process for polynomial regression models employed in function approximation. The $degree$ parameter denotes the degree of the polynomial function utilized. The $loss$ parameter specifies the loss function employed during stochastic gradient descent. The $penalty$ parameter represents the regularization technique applied to mitigate overfitting. The $alpha$ parameter indicates the strength of the regularization penalty. The $learning\_rate$ parameter determines the scheduling of the model's learning rate. Finally, the $max\_iterations$ parameter sets the maximum number of passes over the training data.}
+    \label{table:hyperparameter_tuning}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
     \begin{tabular}{|c|c|}
@@ -39,8 +39,8 @@
   
   \begin{table}[ht]
     \centering
-    \label{table:per_model_parameters}
     \caption[Resulting Hyperparameters for Polynomial Regression Models]{Hyperparameters of the polynomial regression models after hyperparameter tuning.}
+    \label{table:per_model_parameters}
     % Tabular environment goes AFTER the caption!
     \begin{adjustbox}{width=1\textwidth}
     \begin{tabular}{|l|l|}
@@ -64,8 +64,8 @@
   
   \begin{table}[ht]
     \centering
-    \label{table:rl_training_parameters}
     \caption[Q-Learning Parameters]{Parameters utilized for Q-Learning by the RL agent. The target 99th percentile latency and throughput represent predefined SLAs guiding the reward calculation. The aim is to maintain the observed 99th percentile latency below 250 microseconds while ensuring throughput remains above 250,000 operations per second. The exploration rate ($epsilon$) diminishes gradually between episodes, following a decay rate ($epsilon\_decay$), to strike a balance between exploration and exploitation of knowledge. Furthermores, additional episodes beyond the initially specified count are introduced to enable the agent to reach the optimal policy for phases 1, 3, and 4.}
+    \label{table:rl_training_parameters}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
     \begin{tabular}{|c|c|}
@@ -89,7 +89,7 @@
   \begin{table}[ht]
     \centering
     % \caption{Preliminary Rewards Phase 1}
-    \caption[Preliminary Measurements for Phase 1]{Experimental reward analysis conducted on Phase 1 using the NVM Middleware with various fixed combinations of threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 10 interactive threads and 10 batch threads appears to yield the most favorable results for Phase 1.}
+    \caption[Preliminary Measurements for Phase 1]{Experimental reward analysis conducted on Phase 1 using the NVM Middleware with various fixed combinations of interactive ($I$) and batch ($B$) threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 10 interactive threads and 10 batch threads appears to yield the most favorable results for Phase 1.}
     \label{table:rewards_phase_1}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
@@ -111,7 +111,7 @@
   \begin{table}[ht]
     \centering
     % \caption{Preliminary Rewards Phase 2}
-    \caption[Preliminary Measurements for Phase 2]{Experimental reward analysis conducted on Phase 2 using the NVM Middleware with various fixed combinations of threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 10 interactive threads and 10 batch threads appears to yield the most favorable results for Phase 2.}
+    \caption[Preliminary Measurements for Phase 2]{Experimental reward analysis conducted on Phase 2 using the NVM Middleware with various fixed combinations of interactive ($I$) and batch ($B$) threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 10 interactive threads and 10 batch threads appears to yield the most favorable results for Phase 2.}
     \label{table:rewards_phase_2}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
@@ -133,7 +133,7 @@
   \begin{table}[ht]
     \centering
     % \caption{Preliminary Rewards Phase 3}
-    \caption[Preliminary Measurements for Phase 3]{Experimental reward analysis conducted on Phase 3 using the NVM Middleware with various fixed combinations of threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I7/B3, I7/B7, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 7 interactive threads and 3 batch threads appears to yield the most favorable results for Phase 3.}
+    \caption[Preliminary Measurements for Phase 3]{Experimental reward analysis conducted on Phase 3 using the NVM Middleware with various fixed combinations of interactive ($I$) and batch ($B$) threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I7/B3, I7/B7, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 7 interactive threads and 3 batch threads appears to yield the most favorable results for Phase 3.}
     \label{table:rewards_phase_3}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
@@ -155,7 +155,7 @@
   \begin{table}[ht]
     \centering
     % \caption{Preliminary Rewards Phase 4}
-    \caption[Preliminary Measurements for Phase 4]{Experimental reward analysis conducted on Phase 4 using the NVM Middleware with various fixed combinations of threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, and I15/B5. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 15 interactive threads and 5 batch threads appears to yield the most favorable results for Phase 4.}
+    \caption[Preliminary Measurements for Phase 4]{Experimental reward analysis conducted on Phase 4 using the NVM Middleware with various fixed combinations of interactive ($I$) and batch ($B$) threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, and I15/B5. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 15 interactive threads and 5 batch threads appears to yield the most favorable results for Phase 4.}
     \label{table:rewards_phase_4}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}

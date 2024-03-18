@@ -75,8 +75,8 @@ The Monitoring and Resource Management module offers an interface to monitor sys
 \begin{table}[ht]
   \centering
   % \caption[NVM Middleware Programming Interface]{Overview of the NVM Middleware programming interface, categorized by functionality. $System$ functions facilitate resource management within the middleware, including database initialization and thread pool management. $Storage$ functions provide a fundamental key-value interface for submitting requests aimed at accessing persistent memory. $RL$ functions provide utilities for the reinforcement learning process, enabling monitoring of system statistics, state retrieval, and triggering scaling actions.}
-  \label{table:programming_interface}
   \caption[NVM Middleware Programming Interface]{Overview of the NVM Middleware programming interface, categorized by functionality. $System$ functions facilitate resource management within the NVM Middleware, including database initialization and thread pool management. $Storage$ functions provide a fundamental key-value interface for submitting requests aimed at accessing persistent memory. $RL$ functions provide utilities for the reinforcement learning process, enabling monitoring of system statistics, state retrieval, and triggering scaling actions.}
+  \label{table:programming_interface}
   % Tabular environment goes AFTER the caption!
   \begin{adjustbox}{width=1\textwidth}
   \begin{tabular}{|l|l|l|}
@@ -136,8 +136,8 @@ The reward serves as invaluable feedback for the RL agent, empowering iterative 
 
 \begin{table}[ht]
   \centering
-  \label{table:state_space}
   \caption[Reinforcement Learning State Representation]{State representation for the reinforcement learning model. The number of interactive and batch threads is capped at 32, as measurements showed performance degradation with more than 32 threads. The interactiveQueueSize and batchQueueSize represent the number of requests in the respective queues within the NVM Middleware. The block sizes and write ratios are determined by analyzing the I/O requests received from client workloads.}
+  \label{table:state_space}
   \begin{adjustbox}{width=1\textwidth}
   \begin{tabular}{|l|l|l|}
     \hline
@@ -178,8 +178,8 @@ where $s_t \in S$ represents the state space. The tuple encapsulates the key fea
 
 \begin{table}[ht]
   \centering
-  \label{table:action_space}
   \caption[Reinforcement Learning Action Space]{Possible actions in the action space of reinforcement learning and their effects on the NVM Middleware's concurrency control mechanism.}
+  \label{table:action_space}
   \begin{tabular}{|c|l|l|}
   \hline
   \thead{Action} & \thead{Effect on \ Interactive Threads} & \thead{Effect on \ Batch Threads} \\
