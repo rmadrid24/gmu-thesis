@@ -1,4 +1,4 @@
-\chapter[Optimizing Optane PMem Performance for Serverless Storage]{Optimizing Optane PMem Performance for Serverless Storag}
+\chapter[Optimizing Optane PMem Performance for Serverless Storage]{Optimizing Optane PMem Performance for Serverless Storage}
 
 As discussed earlier, the introduction of Optane PMem presents a significant opportunity for serverless storage services. This memory technology offers a unique combination of cost-effective high capacity, high performance, and support for data persistence \cite{IntelOp15:online}. When utilized in App-Direct mode, Optane PMem DIMMs and DRAM DIMMs function as independent memory resources directly controlled by applications for load/store operations. This configuration allows Optane PMem capacity to serve as byte-addressable persistent memory mapped into the system application space, providing direct accessibility to applications. Consequently, Optane PMem can function as persistent storage with memory-like speeds.
 
@@ -17,7 +17,7 @@ The subsequent sections of this chapter elaborate on the design objectives of th
 
 In this section, we discuss the pain points of controlling concurrency levels to optimize Optane PMem within a serverless storage service and explain the design goals of the NVM Middleware.
 
-\subsection{Concurrency Control Challenges in a serverless storage service}
+\subsection{Concurrency Control Challenges in Serverless Storage}
 
 When building an Optane PMem-based serverless storage service, optimizing the memory's performance is just the start. Early works in serverless computing have identified several tasks that a storage service must perform efficiently to meet the demands of serverless computing \cite{180275,jonas2019cloud,klimovic2018understanding,klimovic2018pocket,wu2019autoscaling,romero2021faat}. As a result, service providers must ensure that their concurrency control policies do not interfere with these design goals. In this work, we focus on three challenges faced by service providers when designing a high-performance storage service.
 
@@ -55,7 +55,7 @@ We design NVM Middleware with three main design goals.
 
 \textbf{RL-driven autoscaling policies.} Besides leveraging SLAs to dynamically provision resources and adjust contention resolution mechanisms, our solution proposes the use of Reinforcement Learning to learn from past experiences and predict future behaviors.  These RL-driven policies enable the NVM Middleware to adapt to changing workload patterns over time and meet SLAs objectives more effectively than traditional threshold-based approaches \cite{cano2017curator}. Moreover, given the dynamic and unpredictable nature of FaaS workloads, we propose a model-free algorithm, Q-Learning, to continuously learn the optimal policy based on observed experiences, allowing the NVM Middleware to adapt to new scenarios without needing to explicitly model them.
 
-\section{Architecture}
+\section{NVM Middleware Architecture}
 
 \begin{figure}[ht]
   \centering
@@ -70,7 +70,7 @@ The request handler serves as the primary interface for handling user I/O reques
 
 The Monitoring and Resource Management module offers an interface to monitor system load and SLA performance metrics. This module initiates a separate control thread tasked with gathering data on key parameters within the NVM Middleware, such as 99th latency, throughput, and system load. Utilizing this information, the RL agent makes data-driven decisions regarding optimal thread pool scaling. Subsequently, these decisions are communicated to the Monitoring and Resource Management module, which executes the required actions within the NVM Middleware.
 
-\section{Programming Interface}
+\section{NVM Middleware Programming Interface}
 
 \begin{table}[ht]
   \centering
@@ -111,14 +111,14 @@ The $get\_stats$ function furnishes insights into the 99th percentile and throug
 
 \section{Reinforcement Learning Component}
 
-In this section, we discuss the Q-learning algorithm used by the Reinforcement Learning agent to dynamically adjust the number of threads assigned to each thread pool. The agent’s goal is to find the best combination of threads that meets predetermined latency and throughput SLAs while minimizing contention and ensuring efficient utilization of Optane PMem. 
+In this section, we discuss the Q-learning algorithm used by the RL agent to dynamically adjust the number of threads assigned to each thread pool. The agent’s goal is to find the best combination of threads that meets predetermined latency and throughput SLAs while minimizing contention and ensuring efficient utilization of Optane PMem. 
 
 \subsection{Integration with the NVM Middleware}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[scale=1]{images/rl_workflow.png}
-  \caption[Interaction between RL agent and NVM Middleware]{Interaction between the RL agent and the NVM Middleware. At each time step, the RL agent observes (I) the state of the environment and takes a scaling action (II) on the NVM Middleware based on its learned policy. Subsequently, the agent receives a reward (III), which is utilized to iteratively refine its policy.}
+  \caption[Interaction between Reinforcement Learning Agent and NVM Middleware]{Interaction between the RL agent and the NVM Middleware. At each time step, the RL agent observes (I) the state of the environment and takes a scaling action (II) on the NVM Middleware based on its learned policy. Subsequently, the agent receives a reward (III), which is utilized to iteratively refine its policy.}
   \label{fig:rl_workflow}
 \end{figure}
 
