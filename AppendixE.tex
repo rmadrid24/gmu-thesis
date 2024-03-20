@@ -1,16 +1,16 @@
-\appchapter[RL Agent Evaluation]{RL Agent Evaluation}
+\appchapter[Reinforcement Learning Agent Evaluation]{Reinforcement Learning Agent Evaluation}
 \label{appendix:e}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/long_run_sim.png}
-  \caption[RL Agent Adaptation to Shifting Workloads]{Illustration demonstrating the dynamic adjustment of thread counts by the RL agent during a test comprising 4,000 steps with randomly alternating phases. The top row showcases the RL agent's utilization of learned knowledge to optimize the number of interactive and batch threads for each phase. In the middle row, the throughput and 99th percentile latency reported by the NVM Middleware at each time step are depicted. By dynamically modifying the NVM Middleware threads, the throughput aligns with the predefined throughput SLA. However, unexpected spikes in the 99th percentile latency are observed, contrary to the training phase. The bottom row illustrates the operations per second sent by each phase, highlighting the shift in patterns every 200 steps.}
+  \caption[Reinforcement Learning Agent Adaptation to Shifting Workloads]{Illustration demonstrating the dynamic adjustment of thread counts by the RL agent during a test comprising 4,000 steps with randomly alternating phases. The top row showcases the RL agent's utilization of learned knowledge to optimize the number of interactive and batch threads for each phase. In the middle row, the throughput and 99th percentile latency reported by the NVM Middleware at each time step are depicted. By dynamically modifying the NVM Middleware threads, the throughput aligns with the predefined throughput SLA. However, unexpected spikes in the 99th percentile latency are observed, contrary to the training phase. The bottom row illustrates the operations per second sent by each phase, highlighting the shift in patterns every 200 steps.}
   \label{fig:long_run_eval}
 \end{figure}
 
 \begin{table}[ht]
     \centering
-    \caption[RL Agent Reward Analysis in Long-run Test]{Analysis of the rewards achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of reward signals reported by the environment at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Overall, the NVM Middleware with the RL agent achieves the highest reward.}
+    \caption[Reinforcement Learning Agent Reward Analysis in Long-run Test]{Analysis of the rewards achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of reward signals reported by the environment at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Overall, the NVM Middleware with the RL agent achieves the highest reward.}
     \label{table:eval_results_reward}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
@@ -31,7 +31,7 @@
 
 \begin{table}[ht]
     \centering
-    \caption[RL Agent Throughput Analysis in Long-run Test]{Analysis of the throughput achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of throughput measurements reported by the NVM Middleware at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Overall, the NVM Middleware with the RL agent achieves the highest throughput.}
+    \caption[Reinforcement Learning Agent Throughput Analysis in Long-run Test]{Analysis of the throughput achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of throughput measurements reported by the NVM Middleware at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Overall, the NVM Middleware with the RL agent achieves the highest throughput.}
     \label{table:eval_results_tp}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
@@ -52,7 +52,7 @@
 
 \begin{table}[ht]
     \centering
-    \caption[RL Agent Latency Analysis in Long-run Test]{Analysis of the throughput achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of latency measurements reported by the NVM Middleware at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Surprisingly, in this particular test, both configurations involving the NVM Middleware exhibited higher latency compared to the baseline without concurrency control. This unexpected outcome suggests that the interactive workloads may not have adequately stressed the system, resulting in increased latency when utilizing the NVM Middleware. Further investigation is warranted to ascertain the underlying factors contributing to this behavior.}
+    \caption[Reinforcement Learning Agent Latency Analysis in Long-run Test]{Analysis of the throughput achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of latency measurements reported by the NVM Middleware at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Surprisingly, in this particular test, both configurations involving the NVM Middleware exhibited higher latency compared to the baseline without concurrency control. This unexpected outcome suggests that the interactive workloads may not have adequately stressed the system, resulting in increased latency when utilizing the NVM Middleware. Further investigation is warranted to ascertain the underlying factors contributing to this behavior.}
     \label{table:eval_results_latency}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}

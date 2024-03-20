@@ -13,7 +13,7 @@
 
 % Phase 4. Phase 1. We collect 7814 requests from the Azure Function blob accesses traces to run as our interactive workload. These requests occur in December 6, 2020, between 1:21pm and 1:27pm. The requests collected are predominated by writes, exhibiting a read-to-write ratio of 10-90. They are also predominated by larger data access sizes around 500B. The batch workload remains the same as Phase 3. Furthremore, we assign 200 client threads for each application.
 
-\appchapter[RL Phases]{RL Phases}
+\appchapter[Reinforcement Learning Phases]{Reinforcement Learning Phases}
 \label{appendix:c}
 
 To evaluate the learning capabilities of the RL agent in adapting thread combinations for optimal performance and meeting predefined SLA metrics, we design four distinct phases. Leveraging I/O traces collected from Azure Functions and Wukong, we construct interactive and batch workloads by adjusting parameters such as data access size, read-to-write ratio, and client threads for each application. We intensify the workload by accelerating the pace of the traces and loop the execution to ensure sufficient simulation steps.
