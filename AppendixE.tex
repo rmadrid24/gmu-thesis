@@ -19,11 +19,11 @@
       \hline
       \thead{} & \thead{No NVM Middleware} & \thead{NVM Middleware Fixed} & \thead{NVM Middleware + RL} \\
       \hline
-      Min & -94755.386 & -65157.089 & -87907.434 \\\hline
-      Q1 & -10790.1 & -8605.4625 & -3647.9454 \\\hline
-      Median & -6983.235 & -3208.995 & -4.005294 \\\hline
-      Q3 & -4042.9125 & -2.353015 & 0.31523 \\\hline
-      Max & 3.174046 & 4.89667 & 4.582787 \\
+      Min & -94,755.386 & -65,157.089 & \cellcolor{green}-87,907.434 \\\hline
+      Q1 & -10,790.1 & -8,605.4625 & \cellcolor{green}-3,647.9454 \\\hline
+      Median & -6,983.235 & -3,208.995 & \cellcolor{green}-4.005294 \\\hline
+      Q3 & -4,042.9125 & -2.353015 & \cellcolor{green}0.31523 \\\hline
+      Max & 3.174046 & 4.89667 & \cellcolor{green}4.582787 \\
       \hline
     \end{tabular}
   % \end{adjustbox}
@@ -31,7 +31,7 @@
 
 \begin{table}[ht]
     \centering
-    \caption[Reinforcement Learning Agent Throughput Analysis in Long-run Test]{Analysis of the throughput achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of throughput measurements reported by the NVM Middleware at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Overall, the NVM Middleware with the RL agent achieves the highest throughput.}
+    \caption[Reinforcement Learning Agent Throughput Analysis in Long-run Test]{Analysis of the throughput achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of throughput (operations/second) measurements reported by the NVM Middleware at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Overall, the NVM Middleware with the RL agent achieves the highest throughput.}
     \label{table:eval_results_tp}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
@@ -40,11 +40,11 @@
       \hline
       \thead{} & \thead{No NVM Middleware} & \thead{NVM Middleware Fixed} & \thead{NVM Middleware + RL} \\
       \hline
-      Min & 72,218.9 & 104,719.9 & 159,168.8 \\\hline
-      Q1 & 112,440 & 148,792.5 & 218,816.25 \\\hline
-      Median & 135,508.5 & 186,877 & 252,078.5 \\\hline
-      Q3 & 166,340.25 & 231,597.75 & 278,205 \\\hline
-      Max & 242,104.4 & 357,445.6 & 352,800.27 \\
+      Min & 72,218.9 & 104,719.9 & \cellcolor{green}159,168.8 \\\hline
+      Q1 & 112,440 & 148,792.5 & \cellcolor{green}218,816.25 \\\hline
+      Median & 135,508.5 & 186,877 & \cellcolor{green}252,078.5 \\\hline
+      Q3 & 166,340.25 & 231,597.75 & \cellcolor{green}278,205 \\\hline
+      Max & 242,104.4 & 357,445.6 & \cellcolor{green}352,800.27 \\
       \hline
     \end{tabular}
   % \end{adjustbox}
@@ -52,7 +52,7 @@
 
 \begin{table}[ht]
     \centering
-    \caption[Reinforcement Learning Agent Latency Analysis in Long-run Test]{Analysis of the throughput achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of latency measurements reported by the NVM Middleware at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Surprisingly, in this particular test, both configurations involving the NVM Middleware exhibited higher latency compared to the baseline without concurrency control. This unexpected outcome suggests that the interactive workloads may not have adequately stressed the system, resulting in increased latency when utilizing the NVM Middleware. Further investigation is warranted to ascertain the underlying factors contributing to this behavior.}
+    \caption[Reinforcement Learning Agent Latency Analysis in Long-run Test]{Analysis of the throughput achieved by the RL agent under shifting workloads compared to two baseline scenarios: one without concurrency control and the other keeping the NVM Middleware threads fixed. The values represent the distribution of latency (microseconds) measurements reported by the NVM Middleware at each time step, ranging from the minimum to the maximum observed, along with quartiles and median scores. Surprisingly, in this particular test, both configurations involving the NVM Middleware exhibited higher latency compared to the baseline without concurrency control. This unexpected outcome suggests that the interactive workloads may not have adequately stressed the system, resulting in increased latency when utilizing the NVM Middleware. Further investigation is warranted to ascertain the underlying factors contributing to this behavior.}
     \label{table:eval_results_latency}
     % Tabular environment goes AFTER the caption!
     % \begin{adjustbox}{width=1\textwidth}
@@ -61,11 +61,11 @@
       \hline
       \thead{} & \thead{No NVM Middleware} & \thead{NVM Middleware Fixed} & \thead{NVM Middleware + RL} \\
       \hline
-      Min & 19 & 89 & 130.95 \\\hline
-      Q1 & 81 & 239 & 396.75 \\\hline
-      Median & 19 & 674.5 & 754 \\\hline
-      Q3 & 271.5 & 1888.75 & 1427 \\\hline
-      Max & 82824 & 34090.93 & 34712.04 \\
+      Min & \cellcolor{green}19 & 89 & 130.95 \\\hline
+      Q1 & \cellcolor{green}81 & 239 & 396.75 \\\hline
+      Median & \cellcolor{green}19 & 674.5 & 754 \\\hline
+      Q3 & \cellcolor{green}271.5 & 1,888.75 & 1,427 \\\hline
+      Max & \cellcolor{green}82,824 & 34,090.93 & 34,712.04 \\
       \hline
     \end{tabular}
   % \end{adjustbox}
