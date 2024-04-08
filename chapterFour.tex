@@ -117,7 +117,7 @@ With the tuned regression models, we proceed to execute the Q-learning algorithm
 
 Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4}) indicate that the RL agent is capable of learning the optimal combination of interactive and batch threads for each workload. The learned combination of threads matches our empirical results across all workloads. For Workload A, the agent converges to utilizing approximately 10 interactive and batch threads each. Similarly, for Workload B, the agent converges to approximately 10 interactive and batch threads. For Workload C, the agent converges to approximately 7 interactive and 3 batch threads, while for Workload D, it converges to approximately 15 interactive threads and 5 batch threads.
 
-\begin{table}[H]
+\begin{table}[!htb]
   \centering
   % \caption[RL Regression Models: Hyperparameter Tuning]{List of parameters used for tuning hyperparameters of the polynomial regression models used for function approximation. $Degree$ represents the degree of the polynomial function. $Loss$ represents the loss funciton used by stochastic gradient descent. regularizer represents the penalty to applied to the loss function to shrink the model parameters towards the zero vector. This technique is widely used in regression models to avoid overfitting the data. $Alpha$ represent the strenght to whic the regularization penalty is applied. $learning\_rate$ represents the learning rate schedul of the model. $Max_iter$ represents the maximum number of passes over the training dat}
   \caption[Hyperparameter Tuning Options for Polynomial Regression Models]{Overview of hyperparameters used in the tuning process for polynomial regression models employed in function approximation. The $degree$ parameter denotes the degree of the polynomial function utilized. The $loss$ parameter specifies the loss function employed during stochastic gradient descent. The $penalty$ parameter represents the regularization technique applied to mitigate overfitting. The $alpha$ parameter indicates the strength of the regularization penalty. The $learning\_rate$ parameter determines the scheduling of the model's learning rate. Finally, the $max\_iterations$ parameter sets the maximum number of passes over the training data.}
@@ -141,7 +141,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
 % \end{adjustbox}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
   \centering
   \caption[Resulting Hyperparameters for Polynomial Regression Models]{Hyperparameters of the polynomial regression models after hyperparameter tuning.}
   \label{table:per_model_parameters}
@@ -166,7 +166,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
 \end{adjustbox}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
   \centering
   \caption[Q-Learning Parameters]{Parameters utilized for Q-Learning by the RL agent. The target 99th percentile latency and throughput represent predefined SLAs guiding the reward calculation. The aim is to maintain the observed 99th percentile latency below 250 microseconds while ensuring throughput remains above 250,000 operations per second. The exploration rate ($epsilon$) diminishes gradually between episodes, following a decay rate ($epsilon\_decay$), to strike a balance between exploration and exploitation of knowledge. Furthermores, additional episodes beyond the initially specified count are introduced to enable the agent to reach the optimal policy for phases 1, 3, and 4.}
   \label{table:rl_training_parameters}
@@ -190,7 +190,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
 % \end{adjustbox}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
   \centering
   % \caption{Preliminary Rewards Phase 1}
   \caption[Preliminary Measurements for Phase 1]{Experimental reward analysis conducted on Phase 1 using the NVM Middleware with various fixed combinations of interactive ($I$) and batch ($B$) threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 10 interactive threads and 10 batch threads appears to yield the most favorable results for Phase 1.}
@@ -212,7 +212,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
 % \end{adjustbox}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
   \centering
   % \caption{Preliminary Rewards Phase 2}
   \caption[Preliminary Measurements for Phase 2]{Experimental reward analysis conducted on Phase 2 using the NVM Middleware with various fixed combinations of interactive ($I$) and batch ($B$) threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 10 interactive threads and 10 batch threads appears to yield the most favorable results for Phase 2.}
@@ -234,7 +234,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
 % \end{adjustbox}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
   \centering
   % \caption{Preliminary Rewards Phase 3}
   \caption[Preliminary Measurements for Phase 3]{Experimental reward analysis conducted on Phase 3 using the NVM Middleware with various fixed combinations of interactive ($I$) and batch ($B$) threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I7/B3, I7/B7, I10/B10, I15/B15, I15/B5, and I5/B15. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 7 interactive threads and 3 batch threads appears to yield the most favorable results for Phase 3.}
@@ -256,7 +256,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
 % \end{adjustbox}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[!htb]
   \centering
   % \caption{Preliminary Rewards Phase 4}
   \caption[Preliminary Measurements for Phase 4]{Experimental reward analysis conducted on Phase 4 using the NVM Middleware with various fixed combinations of interactive ($I$) and batch ($B$) threads. The table displays statistics on rewards obtained under different configurations, denoted as I5/B5, I10/B10, I15/B15, and I15/B5. The values represent the distribution of rewards, ranging from the minimum to the maximum observed, along with quartiles and median scores. Based on these preliminary findings, the configuration with 15 interactive threads and 5 batch threads appears to yield the most favorable results for Phase 4.}
@@ -278,7 +278,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
 % \end{adjustbox}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl_training_phase1.png}
   % \caption[Phase 1: Agent's Learned Pattern]{Analysis of the three last episodes of the Q-Learning process performed by the agent when running Phase 1 for 1,000 episodes. On these episodes, the exploration rate is low, indicating that the agent is exploiting its knowledge acquired from previous episodes. The first row demonstrated that the agent configures the NVM Middleware with 10 interactive and 10 batch threads when it starts receiving requests sent from applications configured in Phase 1. This combination of threads matches the preliminary resutls obtained for this phase. Additionally, the second row demonstrates how by configuring the NVM Middleware with the optiomal combination of threads, the agent, most of the steps, keeps the latency low (less than 250 microseconds) and the throughput below 250,000 operations/second.}
@@ -286,7 +286,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
   \label{fig:learned_phase_1}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl_training_phase2.png}
   % \caption{Learned Pattern Phase 2}
@@ -294,7 +294,7 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
   \label{fig:learned_phase_2}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl_training_phase3.png}
   % \caption{Learned Pattern Phase 3}
@@ -302,13 +302,15 @@ Our observations (Figures \ref{fig:learned_phase_1} - \ref{fig:learned_phase_4})
   \label{fig:learned_phase_3}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth,height=\textheight,keepaspectratio,angle=0]{images/rl_training_phase4.png}
   % \caption{Learned Pattern Phase 4}
   \caption[Learned Pattern of Agent during Phase 3]{Visualization depicting the learned pattern of the agent during Phase 1 of the training process. The analysis focuses on the behavior observed in the final three episodes of the Q-Learning process, which spanned 1,000 episodes. During these episodes, the exploration rate is so low that the agent predominantly exploits its accumulated knowledge. The first row illustrates the agent's configuration of the NVM Middleware with high number of interactive threads (approximately 15) and low number of batch threads (approximately 5), aligning with preliminary results for Phase 4. In the middle row, the throughput and 99th percentile latency reported by the NVM Middleware at each time step are depicted. By employing the optimal combination of threads, the agent consistently maintains low latency (less than 250 microseconds) and a throughput exceeding 250,000 operations/second across most steps. Finally, the bottom row illustrates the operations per second sent to the NVM Middleware by Phase 4.}
   \label{fig:learned_phase_4}
 \end{figure}
+
+\FloatBarrier
 
 \subsection*{Evaluating the RL Agent}
 
